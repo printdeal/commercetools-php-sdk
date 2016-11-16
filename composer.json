@@ -17,6 +17,9 @@
   },
   "autoload-dev": {
     "psr-4": {
+      "Commercetools\\Core\\Templates\\": [
+        "templates/"
+      ],
       "Commercetools\\Core\\": [
         "tests/unit/",
         "tests/integration/"
@@ -50,7 +53,9 @@
     "symfony/yaml": "*",
     "cache/array-adapter": "^0.4.0",
     "cache/filesystem-adapter": "^0.3.0",
-    "incenteev/composer-parameter-handler": "^2.1"
+    "incenteev/composer-parameter-handler": "^2.1",
+    "nikic/php-parser": "^2.0",
+    "doctrine/annotations": "^1.3"
   },
   "scripts": {
     "updateConfig": [
