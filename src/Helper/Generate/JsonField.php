@@ -13,7 +13,7 @@ use Doctrine\Common\Annotations\Annotation;
  * @Annotation
  * @Target({"PROPERTY"})
  */
-class FieldType
+class JsonField
 {
     /**
      * @var string

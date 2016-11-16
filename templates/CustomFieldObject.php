@@ -6,18 +6,18 @@ namespace Commercetools\Core\Templates;
 
 use Commercetools\Core\Templates\Common\JsonObject;
 use Commercetools\Core\Templates\CustomField\FieldContainer;
-use Commercetools\Core\Helper\Generate\FieldType;
+use Commercetools\Core\Helper\Generate\JsonField;
 use Commercetools\Core\Templates\Type\TypeReference;
 
 class CustomFieldObject extends JsonObject
 {
     /**
-     * @FieldType(type="TypeReference")
+     * @JsonField(type="TypeReference")
      * @var TypeReference
      */
     private $type;
     /**
-     * @FieldType(type="FieldContainer", params={"type"})
+     * @JsonField(type="FieldContainer", params={"type"})
      * @var FieldContainer
      */
     private $fields;

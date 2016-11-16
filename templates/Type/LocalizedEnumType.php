@@ -5,14 +5,14 @@
 
 namespace Commercetools\Core\Templates\Type;
 
-use Commercetools\Core\Helper\Generate\FieldType;
+use Commercetools\Core\Helper\Generate\JsonField;
 
-class LocalizedEnumType extends BaseType
+class LocalizedEnumType extends FieldType
 {
     const FIELD_TYPE = LocalizedEnumValue::class;
     
     /**
-     * @FieldType(type="LocalizedEnumValueCollection")
+     * @JsonField(type="LocalizedEnumValueCollection")
      * @var  LocalizedEnumValueCollection
      */
     private $values;

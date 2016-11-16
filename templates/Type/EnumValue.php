@@ -6,18 +6,18 @@
 namespace Commercetools\Core\Templates\Type;
 
 use Commercetools\Core\Templates\Common\JsonObject;
-use Commercetools\Core\Helper\Generate\FieldType;
+use Commercetools\Core\Helper\Generate\JsonField;
 
 class EnumValue extends JsonObject
 {
     /**   
-     * @FieldType(type="string")
+     * @JsonField(type="string")
      * @var string
      */
     private $key;
 
     /**            
-     * @FieldType(type="string")
+     * @JsonField(type="string")
      * @var string
      */
     private $label;

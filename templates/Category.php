@@ -5,7 +5,7 @@
 namespace Commercetools\Core\Templates;
 
 use DateTimeImmutable;
-use Commercetools\Core\Helper\Generate\FieldType;
+use Commercetools\Core\Helper\Generate\JsonField;
 use Commercetools\Core\Templates\Common\JsonObject;
 use Commercetools\Core\Templates\Category\CategoryReferenceCollection;
 use Commercetools\Core\Templates\Common\LocalizedString;
@@ -15,48 +15,48 @@ use Commercetools\Core\Templates\Common\LocalizedString;
 class Category extends JsonObject
 {
     /**    
-     * @FieldType(type="int")
+     * @JsonField(type="int")
      * @var int
      */
     private $id;
     
     /**
-     * @FieldType(type="int")
+     * @JsonField(type="int")
      * @var int
      */
     private $version;
     /**
-     * @FieldType(type="DateTimeImmutable")
+     * @JsonField(type="DateTimeImmutable")
      * @var DateTimeImmutable
      */
     private $createdAt;
     /**
-     * @FieldType(type="DateTimeImmutable")
+     * @JsonField(type="DateTimeImmutable")
      * @var DateTimeImmutable
      */
     private $lastModifiedAt;
     /**
-     * @FieldType(type="LocalizedString")
+     * @JsonField(type="LocalizedString")
      * @var LocalizedString
      */
     private $name;
     /**
-     * @FieldType(type="LocalizedString")
+     * @JsonField(type="LocalizedString")
      * @var LocalizedString
      */
     private $slug;
     /**
-     * @FieldType(type="LocalizedString")
+     * @JsonField(type="LocalizedString")
      * @var LocalizedString
      */
     private $description;
     /**
-     * @FieldType(type="CategoryReferenceCollection")
+     * @JsonField(type="CategoryReferenceCollection")
      * @var CategoryReferenceCollection
      */
     private $ancestors;
     /**
-     * @FieldType(type="CustomFieldObject")
+     * @JsonField(type="CustomFieldObject")
      * @var CustomFieldObject
      */
     private $custom;

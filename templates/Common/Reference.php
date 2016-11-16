@@ -5,7 +5,7 @@
 namespace Commercetools\Core\Templates\Common;
 
 use Commercetools\Core\Templates\Category;
-use Commercetools\Core\Helper\Generate\FieldType;
+use Commercetools\Core\Helper\Generate\JsonField;
 use Commercetools\Core\Helper\Generate\DiscriminatorColumn;
 
 /**
@@ -20,7 +20,7 @@ class Reference extends ResourceIdentifier
     ];
 
     /**
-     * @FieldType(type="JsonObject")
+     * @JsonField(type="JsonObject")
      * @var JsonObject
      */
     private $obj;

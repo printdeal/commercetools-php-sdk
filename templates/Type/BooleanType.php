@@ -5,7 +5,7 @@
 
 namespace Commercetools\Core\Templates\Type;
 
-class BooleanType extends BaseType
+class BooleanType extends FieldType
 {
     public function __construct(array $data)
     {

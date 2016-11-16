@@ -7,13 +7,13 @@ namespace Commercetools\Core\Templates\Type;
 
 use Commercetools\Core\Templates\Common\JsonObject;
 use Commercetools\Core\Helper\Generate\DiscriminatorColumn;
-use Commercetools\Core\Helper\Generate\FieldType;
+use Commercetools\Core\Helper\Generate\JsonField;
 
 /**
  * @package Commercetools\Core\Templates\Type
- * @DiscriminatorColumn(name="name", callback="BaseType::discriminatorType")
+ * @DiscriminatorColumn(name="name", callback="FieldType::discriminatorType")
  */
-class BaseType extends JsonObject
+class FieldType extends JsonObject
 {
     const FIELD_TYPE = '';
     const TYPES = [
@@ -23,7 +23,7 @@ class BaseType extends JsonObject
         'LocalizedEnum' => LocalizedEnumType::class
     ];
     /**  
-     * @FieldType(type="string")
+     * @JsonField(type="string")
      * @var string
      */
     private $name;

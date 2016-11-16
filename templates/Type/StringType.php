@@ -5,7 +5,7 @@
 
 namespace Commercetools\Core\Templates\Type;
 
-class StringType extends BaseType
+class StringType extends FieldType
 {
     public function __construct(array $data)
     {

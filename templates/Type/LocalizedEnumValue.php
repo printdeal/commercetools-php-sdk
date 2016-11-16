@@ -7,18 +7,18 @@ namespace Commercetools\Core\Templates\Type;
 
 use Commercetools\Core\Templates\Common\JsonObject;
 use Commercetools\Core\Templates\Common\LocalizedString;
-use Commercetools\Core\Helper\Generate\FieldType;
+use Commercetools\Core\Helper\Generate\JsonField;
 
 class LocalizedEnumValue extends JsonObject
 {
     /**  
-     * @FieldType(type="string")
+     * @JsonField(type="string")
      * @var string
      */
     private $key;
 
     /**
-     * @FieldType(type="LocalizedString")
+     * @JsonField(type="LocalizedString")
      * @var LocalizedString
      */
     private $label;

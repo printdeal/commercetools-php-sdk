@@ -5,7 +5,7 @@
 
 namespace Commercetools\Core\Templates\Type;
 
-class LocalizedStringType extends BaseType
+class LocalizedStringType extends FieldType
 {
     public function __construct(array $data)
     {

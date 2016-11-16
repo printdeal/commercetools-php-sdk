@@ -7,36 +7,36 @@ namespace Commercetools\Core\Templates\Type;
 
 use Commercetools\Core\Templates\Common\JsonObject;
 use Commercetools\Core\Templates\Common\LocalizedString;
-use Commercetools\Core\Helper\Generate\FieldType;
+use Commercetools\Core\Helper\Generate\JsonField;
 
 class FieldDefinition extends JsonObject
 {
     /**
-     * @FieldType(type="BaseType")
-     * @var BaseType
+     * @JsonField(type="FieldType")
+     * @var FieldType
      */
     private $type;
 
     /**  
-     * @FieldType(type="string")
+     * @JsonField(type="string")
      * @var string
      */
     private $name;
 
     /**
-     * @FieldType(type="LocalizedString")
+     * @JsonField(type="LocalizedString")
      * @var LocalizedString
      */
     private $label;
 
     /** 
-     * @FieldType(type="bool")
+     * @JsonField(type="bool")
      * @var bool
      */
     private $required;
 
     /**            
-     * @FieldType(type="string")
+     * @JsonField(type="string")
      * @var string
      */
     private $inputHint;

@@ -6,7 +6,7 @@ namespace Commercetools\Core\Templates\Category;
 
 use Commercetools\Core\Templates\Category;
 use Commercetools\Core\Templates\Common\Reference;
-use Commercetools\Core\Helper\Generate\FieldType;
+use Commercetools\Core\Helper\Generate\JsonField;
 
 /**
  * Class CategoryReference
@@ -15,7 +15,7 @@ use Commercetools\Core\Helper\Generate\FieldType;
 class CategoryReference extends Reference
 {
     /**
-     * @FieldType(type="Category")
+     * @JsonField(type="Category")
      * @var Category
      */
     private $obj;

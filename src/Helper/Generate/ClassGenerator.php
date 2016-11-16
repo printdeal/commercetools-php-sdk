@@ -42,7 +42,7 @@ class ClassGenerator
         $printer = new PrettyPrinter\Standard();
 
         $annotationClasses = [
-            FieldType::class,
+            JsonField::class,
             DiscriminatorColumn::class,
             CollectionType::class,
         ];

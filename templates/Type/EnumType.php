@@ -5,14 +5,14 @@
 
 namespace Commercetools\Core\Templates\Type;
 
-use Commercetools\Core\Helper\Generate\FieldType;
+use Commercetools\Core\Helper\Generate\JsonField;
 
-class EnumType extends BaseType
+class EnumType extends FieldType
 {
     const FIELD_TYPE = EnumValue::class;
     
     /**
-     * @FieldType(type="EnumValueCollection")
+     * @JsonField(type="EnumValueCollection")
      * @var EnumValueCollection
      */
     private $values;

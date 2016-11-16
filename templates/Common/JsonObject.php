@@ -4,7 +4,7 @@
  */
 namespace Commercetools\Core\Templates\Common;
 
-use Commercetools\Core\Helper\Generate\FieldType;
+use Commercetools\Core\Helper\Generate\JsonField;
 
 class JsonObject implements \JsonSerializable, ArraySerializable
 {

@@ -4,26 +4,26 @@
  */
 namespace Commercetools\Core\Templates\Common;
 
-use Commercetools\Core\Helper\Generate\FieldType;
+use Commercetools\Core\Helper\Generate\JsonField;
 
 class ResourceIdentifier extends JsonObject
 {
     const RESOURCE_TYPE_ID = '';
 
     /**     
-     * @FieldType(type="string")
+     * @JsonField(type="string")
      * @var string
      */
     private $typeId;
 
     /**  
-     * @FieldType(type="string")
+     * @JsonField(type="string")
      * @var string
      */
     private $id;
 
     /**  
-     * @FieldType(type="string")
+     * @JsonField(type="string")
      * @var string
      */
     private $key;

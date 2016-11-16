@@ -67,21 +67,29 @@ class PropertyVisitor extends NodeVisitorAbstract
         $annotation = $this->reader->getClassAnnotation($reflectedClass, CollectionType::class);
 
         if ($annotation instanceof CollectionType) {
-            $node->stmts[] =$this->getCollectionAt($annotation);
-            $node->stmts[] =$this->getCollectionCurrent($annotation);
+            if (!$this->findMethod($node, 'at')) {
+                $node->stmts[] =$this->getCollectionAt($annotation);
+            }
+            if (!$this->findMethod($node, 'current')) {
+                $node->stmts[] =$this->getCollectionCurrent($annotation);
+            }
             if (!empty($annotation->indexes)) {
-                $node->stmts[] = $this->getCollectionIndexer($annotation);
+                if (!$this->findMethod($node, 'index')) {
+                    $node->stmts[] = $this->getCollectionIndexer($annotation);
+                }
 
                 foreach ($annotation->indexes as $index) {
-                    $node->stmts[] = $this->getCollectionIndexGetter($annotation, $index);
+                    if (!$this->findMethod($node, 'by' . ucfirst($index))) {
+                        $node->stmts[] = $this->getCollectionIndexGetter($annotation, $index);
+                    }
                 }
             }
         }
 
         $accessibleProperties = $this->getProtectedProperties($reflectedClass);
         foreach ($accessibleProperties as $property) {
-            $annotation = $this->reader->getPropertyAnnotation($property, FieldType::class);
-            if (!$annotation instanceof FieldType) {
+            $annotation = $this->reader->getPropertyAnnotation($property, JsonField::class);
+            if (!$annotation instanceof JsonField) {
                 continue;
             }
 
@@ -167,7 +175,7 @@ class PropertyVisitor extends NodeVisitorAbstract
         return $method;
     }
 
-    private function getPropertyGetter(ReflectionProperty $property, FieldType $annotation)
+    private function getPropertyGetter(ReflectionProperty $property, JsonField $annotation)
     {
         $methodName =  'get'.ucfirst($property->getName());
         $factory = new BuilderFactory();
