@@ -55,7 +55,7 @@
     "cache/filesystem-adapter": "^0.3.0",
     "incenteev/composer-parameter-handler": "^2.1",
     "nikic/php-parser": "^2.0",
-    "doctrine/annotations": "^1.3"
+    "doctrine/annotations": "^1.2"
   },
   "scripts": {
     "updateConfig": [
