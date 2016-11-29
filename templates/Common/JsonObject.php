@@ -4,8 +4,6 @@
  */
 namespace Commercetools\Core\Templates\Common;
 
-use Commercetools\Core\Helper\Generate\JsonField;
-
 class JsonObject implements \JsonSerializable, ArraySerializable
 {
     private $rawData;
@@ -31,16 +29,27 @@ class JsonObject implements \JsonSerializable, ArraySerializable
     /**
      * @inheritdoc
      */
-    public function toArray()
+    public static function fromArray(array $data)
     {
-        return $this->rawData;
+        return new static($data);
     }
 
     /**
      * @inheritdoc
      */
-    public static function fromArray(array $data)
+    public function toArray()
     {
-        return new static($data);
+        $data = array_filter(
+            get_object_vars($this),
+            function ($value, $key) {
+                if ($key == 'rawData') {
+                    return false;
+                }
+                return !is_null($value);
+            },
+            ARRAY_FILTER_USE_BOTH
+        );
+        $data = array_merge($this->rawData, $data);
+        return $data;
     }
 }

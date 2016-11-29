@@ -20,13 +20,13 @@ class ResourceIdentifier extends JsonObject
      * @JsonField(type="string")
      * @var string
      */
-    private $id;
+    protected $id;
 
     /**  
      * @JsonField(type="string")
      * @var string
      */
-    private $key;
+    protected $key;
 
     public function __construct(array $data)
     {

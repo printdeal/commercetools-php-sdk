@@ -4,13 +4,17 @@
  */
 namespace Commercetools\Core\Templates;
 
+use Commercetools\Core\Templates\Category\CategoryReference;
 use DateTimeImmutable;
+use Commercetools\Core\Helper\Generate\Draftable;
 use Commercetools\Core\Helper\Generate\JsonField;
 use Commercetools\Core\Templates\Common\JsonObject;
 use Commercetools\Core\Templates\Category\CategoryReferenceCollection;
 use Commercetools\Core\Templates\Common\LocalizedString;
 /**
- * Class Category
+ * @Draftable(fields={
+ *     "name", "description", "parent", "slug", "orderHint", "externalId", "metaTitle", "metaDescription", "metaKeywords", "custom"
+ * })
  */
 class Category extends JsonObject
 {
@@ -55,6 +59,43 @@ class Category extends JsonObject
      * @var CategoryReferenceCollection
      */
     private $ancestors;
+
+    /**
+     * @JsonField(type="CategoryReference")
+     * @var CategoryReference
+     */
+    private $parent;
+
+    /**
+     * @JsonField(type="string")
+     * @var string
+     */
+    private $orderHint;
+
+    /**
+     * @JsonField(type="string")
+     * @var string
+     */
+    private $externalId;
+
+    /**
+     * @JsonField(type="LocalizedString")
+     * @var LocalizedString
+     */
+    private $metaTitle;
+
+    /**
+     * @JsonField(type="LocalizedString")
+     * @var LocalizedString
+     */
+    private $metaDescription;
+
+    /**
+     * @JsonField(type="LocalizedString")
+     * @var LocalizedString
+     */
+    private $metaKeywords;
+
     /**
      * @JsonField(type="CustomFieldObject")
      * @var CustomFieldObject

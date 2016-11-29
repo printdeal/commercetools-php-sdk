@@ -51,11 +51,13 @@
     "phpunit/phpcov": "*",
     "friendsofphp/php-cs-fixer": "@stable",
     "symfony/yaml": "*",
+    "symfony/console": "^3.0",
     "cache/array-adapter": "^0.4.0",
     "cache/filesystem-adapter": "^0.3.0",
     "incenteev/composer-parameter-handler": "^2.1",
     "nikic/php-parser": "^2.0",
-    "doctrine/annotations": "^1.2"
+    "doctrine/annotations": "^1.2",
+    "henrikbjorn/lurker": "^1.2"
   },
   "scripts": {
     "updateConfig": [
