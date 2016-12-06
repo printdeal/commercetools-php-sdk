@@ -28,52 +28,66 @@ class CollectionSetterVisitor extends GeneratorVisitor
         if ($node->namespacedName == JsonObject::class) {
             return null;
         }
+        
+        
 
         $reflectedClass = new ReflectionClass((string)$node->namespacedName);
 
-        $annotation = $this->reader->getClassAnnotation($reflectedClass, DraftableCollection::class);
+        $annotation = $this->reader->getClassAnnotation($reflectedClass, CollectionSetter::class);
 
-        if ($annotation instanceof DraftableCollection) {
-            $annotation = $this->reader->getClassAnnotation($reflectedClass, CollectionType::class);
-
-            if ($annotation instanceof CollectionType) {
+        if ($annotation instanceof CollectionSetter) {
+            if ($annotation->type == 'map') {
+                if (!$this->findMethod($node, 'set')) {
+                    $node->stmts[] = $this->getCollectionSet($annotation);
+                }
+            }
+            if ($annotation->type == 'list') {
                 if (!$this->findMethod($node, 'add')) {
-                    $node->stmts[] = $this->getCollectionAdd($annotation);
+                    $node->stmts[] = $this->getCollectionAdd();
                 }
             }
         }
     }
 
-    private function getCollectionAdd(CollectionType $annotation)
+    private function getCollectionSet()
     {
         $factory = new BuilderFactory();
-        $method = $factory->method('add')
+
+        $body =    '    if ($value instanceof ArraySerializable) {' . PHP_EOL;
+        $body.=    '        $value = $value->toArray();' . PHP_EOL;
+        $body.=    '    }' . PHP_EOL;
+        $body.=    '    $this->index([$key => $value]);' . PHP_EOL;
+        $body.=    '    $this->rawSet($key, $value);' . PHP_EOL;
+        $stmts = (new ParserFactory())->create(ParserFactory::PREFER_PHP5)->parse('<?php ' . $body);
+
+        $method = $factory->method('set')
             ->makePublic()
+            ->addParam($factory->param('key'))
             ->addParam($factory->param('value'))
-//            ->addStmt(
-//                new Node\Expr\Assign(
-//                    new Node\Expr\Variable('this->' . $property->getName()),
-//                    new Node\Expr\Variable($property->getName())
-//                )
-//            )
+            ->addStmts($stmts)
             ->getNode();
-        
+
         return $method;
     }
 
-    private function getCollectionCurrent(CollectionType $annotation)
+    private function getCollectionAdd()
     {
         $factory = new BuilderFactory();
-        $method = $factory->method('current')
+
+        $body =    '    if (!$value instanceof ' . PHP_EOL;
+        $body =    '    if ($value instanceof ArraySerializable) {' . PHP_EOL;
+        $body.=    '        $value = $value->toArray();' . PHP_EOL;
+        $body.=    '    }' . PHP_EOL;
+        $body.=    '    $this->index([$this->count() => $value]);' . PHP_EOL;
+        $body.=    '    $this->rawSet(null, $value);' . PHP_EOL;
+        $stmts = (new ParserFactory())->create(ParserFactory::PREFER_PHP5)->parse('<?php ' . $body);
+
+        $method = $factory->method('add')
             ->makePublic()
-            ->setDocComment('/**
-                               * @return ' . $annotation->type . '
-                               */')
+            ->addParam($factory->param('value'))
+            ->addStmts($stmts)
             ->getNode();
-
-        $body = '    return parent::current();';
-        $method->stmts = (new ParserFactory())->create(ParserFactory::PREFER_PHP5)->parse('<?php ' . $body);
-
+        
         return $method;
     }
 }

@@ -99,13 +99,20 @@ class CollectionVisitor extends GeneratorVisitor
             ->addParam($factory->param('index'))
             ->getNode();
 
+        $body =    '    if (!isset($this->data[$index])) {' . PHP_EOL;
+        $body.=    '        $data = $this->raw($index);' . PHP_EOL;
+        $body.=    '        if (!is_null($data)) {' . PHP_EOL;
         if ($typeAnnotation = $this->getTypeAnnotation($annotation->type)) {
-            $body = '    $data = $this->raw($index);' . PHP_EOL;
-            $body.= '    $type = ' . $typeAnnotation->callback . '($data, \'' . $typeAnnotation->name . '\');';
-            $body.= '    return new $type($data);' . PHP_EOL;
+            $body.='            $type = ' . $typeAnnotation->callback . '($data, \'' . $typeAnnotation->name . '\');' .
+                PHP_EOL;
+            $body.='            $data = new $type($data);' . PHP_EOL;
         } else {
-            $body = '    return new ' . $annotation->type . '($this->raw($index));';
+            $body.='            $data = new ' . $annotation->type . '($data);' . PHP_EOL;
         }
+        $body.=    '        }' . PHP_EOL;
+        $body.=    '        $this->data[$index] = $data;' . PHP_EOL;
+        $body.=    '    }' . PHP_EOL;
+        $body.=    '    return $this->data[$index];' . PHP_EOL;
         $method->stmts = (new ParserFactory())->create(ParserFactory::PREFER_PHP5)->parse('<?php ' . $body);
 
         return $method;

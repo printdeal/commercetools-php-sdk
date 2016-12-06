@@ -13,10 +13,15 @@ use Doctrine\Common\Annotations\Annotation;
  * @Annotation
  * @Target({"CLASS"})
  */
-class DraftableCollection
+class CollectionSetter
 {
     /**
      * @Enum({"map", "list"})
      */
     public $type;
+
+    /**
+     * @var array
+     */
+    public $elementTypes = [];
 }

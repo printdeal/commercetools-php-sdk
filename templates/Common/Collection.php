@@ -4,11 +4,12 @@
  */
 namespace Commercetools\Core\Templates\Common;
 
+use Commercetools\Core\Helper\Generate\ArraySerializable;
 use Commercetools\Core\Helper\Generate\JsonField;
 
-class Collection extends JsonObject implements \Iterator, \Countable
+class Collection implements \Iterator, \Countable, ArraySerializable, \JsonSerializable
 {
-    const TYPE = '';
+    private $rawData;
 
     /**
      * @var array
@@ -22,13 +23,57 @@ class Collection extends JsonObject implements \Iterator, \Countable
 
     private $indexes = [];
 
-    public function __construct(array $data)
+    protected $data = [];
+
+    public function __construct(array $data =[])
     {
         $this->keys = array_keys($data);
         $this->index($data);
-        parent::__construct($data);
+        $this->rawData = $data;
     }
 
+    protected function raw($field)
+    {
+        if (isset($this->rawData[$field])) {
+            return $this->rawData[$field];
+        }
+        return null;
+    }
+
+    protected function rawSet($field, $data)
+    {
+        if (!is_null($field)) {
+            $this->rawData[$field] = $data;
+        } else {
+            $this->rawData[] = $data;
+        }
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->toArray();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function fromArray(array $data)
+    {
+        return new static($data);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function toArray()
+    {
+        return $this->rawData;
+    }
+
+    public function __set($name, $value)
+    {
+        throw new \BadMethodCallException('Setting values is not allowed');
+    }
 
     protected function index($data)
     {
@@ -43,7 +88,6 @@ class Collection extends JsonObject implements \Iterator, \Countable
     {
         return isset($this->indexes[$index][$key]) ? $this->at($this->indexes[$index][$key]) : null;
     }
-
 
     /**
      * @inheritDoc

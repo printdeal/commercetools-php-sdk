@@ -5,7 +5,6 @@
 
 namespace Commercetools\Core\Templates\Common;
 
-use Commercetools\Core\Templates\Common\Collection;
 use Commercetools\Core\Helper\Generate\CollectionType;
 
 /**

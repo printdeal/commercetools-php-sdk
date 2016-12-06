@@ -5,6 +5,7 @@
 
 namespace Commercetools\Core\Helper\Generate;
 
+use Commercetools\Core\Helper\Generate\ArraySerializable;
 use Commercetools\Core\Templates\Common\JsonObject;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
@@ -43,11 +44,13 @@ class ClassGenerator
 
         $annotationClasses = [
             JsonField::class,
+            JsonFieldSetter::class,
             DiscriminatorColumn::class,
             CollectionType::class,
             Draftable::class,
             DraftableCollection::class,
-            ReferenceType::class
+            ReferenceType::class,
+            CollectionSetter::class
         ];
         foreach ($annotationClasses as $annotationClass) {
             $class = new ReflectionClass($annotationClass);
@@ -63,11 +66,6 @@ class ClassGenerator
         $allFiles = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
         $phpFiles = new \RegexIterator($allFiles, '/\.php$/');
 
-        $this->generateDataFiles($phpFiles);
-    }
-
-    public function generateDataFiles($phpFiles)
-    {
         $path = realpath($this->path);
         $this->ensureDirExists($this->outputPath);
         $outputPath = realpath($this->outputPath);
@@ -82,34 +80,35 @@ class ClassGenerator
                 $outputPath
             );
         }
-        $this->generateFiles($files, $this->newNamespace);
+
+        $this->generateBaseDrafts($this->getDraftableClasses($outputPath), $this->newNamespace);
+
+        $allFiles = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($outputPath));
+        $phpFiles = new \RegexIterator($allFiles, '/\.php$/');
+        $this->generateFiles($phpFiles, $this->newNamespace);
     }
 
     protected function generateFiles($files, $namespace)
     {
         $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP5);
 
-        $draftVisitor = new DraftVisitor();
-        $propertyVisitor = new JsonFieldGetterVisitor();
         foreach ($files as $file) {
             $code = file_get_contents($file);
             $stmts = $parser->parse($code);
 
             $traverser = new NodeTraverser();
             $traverser->addVisitor(new NameResolver()); // we will need resolved names
-            $traverser->addVisitor($draftVisitor);
-            $traverser->addVisitor($propertyVisitor);
-            $traverser->addVisitor(new ReferenceVisitor());
+            $traverser->addVisitor(new JsonFieldGetterVisitor());
+            $traverser->addVisitor(new JsonFieldSetterVisitor());
             $traverser->addVisitor(new CollectionVisitor());
+            $traverser->addVisitor(new ReferenceVisitor());
+            $traverser->addVisitor(new CollectionSetterVisitor());
             $traverser->addVisitor(new NamespaceChangeVisitor($namespace, $namespace));
             $traverser->traverse($stmts);
 
 
             $this->writeClass($file, $stmts);
         }
-
-        $files = $this->generateBaseDrafts($draftVisitor->getDraftableClasses(), $namespace);
-        $this->enrichDrafts($files, $namespace);
     }
 
     protected function moveClassToNewNamespace($file, $oldNamespace, $newNamespace, $inputPath, $outputPath)
@@ -128,24 +127,43 @@ class ClassGenerator
         return $outputFile;
     }
 
-    protected function enrichDrafts($files, $namespace)
+    protected function getDraftableClasses($path)
     {
-        foreach ($files as $file) {
+        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP5);
+        $allFiles = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
+        $phpFiles = new \RegexIterator($allFiles, '/\.php$/');
+
+        $draftVisitor = new DraftVisitor();
+        foreach ($phpFiles as $file) {
             $code = file_get_contents($file);
-            $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP5);
             $stmts = $parser->parse($code);
 
             $traverser = new NodeTraverser();
             $traverser->addVisitor(new NameResolver()); // we will need resolved names
-            $traverser->addVisitor(new JsonFieldGetterVisitor());
-            $traverser->addVisitor(new DraftSetterVisitor());
-            $traverser->addVisitor(new CollectionVisitor());
-            $traverser->addVisitor(new ReferenceVisitor());
-            $traverser->addVisitor(new CollectionSetterVisitor());
-            $traverser->addVisitor(new NamespaceChangeVisitor($namespace, $namespace));
+            $traverser->addVisitor($draftVisitor);
             $traverser->traverse($stmts);
-            $this->writeClass($file, $stmts);
         }
+        return $draftVisitor->getDraftableClasses();
+    }
+
+    protected function writeAnnotation($annotation)
+    {
+        $class = new ReflectionClass($annotation);
+        $t = [];
+        foreach (get_object_vars($annotation) as $key => $value) {
+            if (empty($value)) {
+                continue;
+            }
+            if (is_array($value)) {
+                $t[] = sprintf('%s={"%s"}', $key, implode('", "', $value));
+            } elseif (is_numeric($value)) {
+                $t[] = sprintf('%s=%s', $key, $value);
+            } else {
+                $t[] = sprintf('%s="%s"', $key, $value);
+            }
+        }
+
+        return '@' . $class->getShortName() . '(' . implode(', ', $t) . ')';
     }
 
     public function generateBaseDrafts($draftableClasses, $namespace)
@@ -161,8 +179,21 @@ class ClassGenerator
             $annotation = $reader->getClassAnnotation($reflectedClass, Draftable::class);
 
             if ($annotation instanceof Draftable) {
+                $classAnnotations = array_filter(
+                    $reader->getClassAnnotations($reflectedClass),
+                    function ($annotation) {
+                        return !($annotation instanceof Draftable);
+                    }
+                );
+
+                $docComment = '/**' . PHP_EOL . ' *' . PHP_EOL;
+                foreach ($classAnnotations as $classAnnotation) {
+                    $docComment.= ' * ' . $this->writeAnnotation($classAnnotation) . PHP_EOL;
+                }
+                $docComment.=' */';
+
                 $classBuilder = $factory->class($reflectedClass->getShortName() . 'Draft')
-                    ->setDocComment($reflectedClass->getDocComment())
+                    ->setDocComment($docComment)
                     ->extend($reflectedClass->getParentClass()->getShortName());
 
                 list($types, $uses) = $this->getUses($reflectedClass);
@@ -170,7 +201,7 @@ class ClassGenerator
 
                 $classUses = [
                     'JsonField' => $factory->use(JsonField::class),
-                    'Draftable' => $factory->use(Draftable::class),
+                    'JsonFieldSetter' => $factory->use(JsonFieldSetter::class),
                     'ReferenceType' => $factory->use(ReferenceType::class),
                 ];
                 if ($reflectedClass->getNamespaceName() != $reflectedClass->getParentClass()->getNamespaceName()) {
@@ -182,12 +213,33 @@ class ClassGenerator
                     if (!in_array($property->getName(), $annotation->fields)) {
                         continue;
                     }
-                    if ($property->getDeclaringClass() != $reflectedClass) {
-                        continue;
+
+                    $jsonFieldAnnotation = $reader->getPropertyAnnotation($property, JsonField::class);
+                    $setter = new JsonFieldSetter();
+                    if ($jsonFieldAnnotation instanceof JsonField) {
+                        $setter->paramTypes = [$jsonFieldAnnotation->type];
+                        if (isset($uses[$jsonFieldAnnotation->type])) {
+                            $draftType = $uses[$jsonFieldAnnotation->type]['name'];
+                        } else {
+                            $draftType = $reflectedClass->getNamespaceName() . '\\' . $jsonFieldAnnotation->type;
+                        }
+                        if (isset($draftableClasses[$draftType])) {
+                            $setter->paramTypes[] = $jsonFieldAnnotation->type . 'Draft';
+                            $uses[$jsonFieldAnnotation->type . 'Draft'] = ['name' => $draftType . 'Draft'];
+                        }
+                        if (count($setter->paramTypes) == 1) {
+                            $setter->type = current($setter->paramTypes);
+                        }
                     }
+                    $docComment = str_replace(
+                        '/**',
+                        '/**' . PHP_EOL . ' * ' . $this->writeAnnotation($setter),
+                        $property->getDocComment()
+                    );
+
                     $draftProperty = $factory
                         ->property($property->getName())
-                        ->setDocComment($property->getDocComment());
+                        ->setDocComment($docComment);
                     if ($property->isProtected() || $property->isPrivate()) {
                         $draftProperty = $draftProperty->makeProtected();
                     }
@@ -201,7 +253,17 @@ class ClassGenerator
                             if (isset($use['alias'])) {
                                 $node->as($use['alias']);
                             }
-                            $classUses[$type] = $node;
+
+                            $classUses[$type] = $node->getNode();
+                        }
+                        if (isset($uses[$type . 'Draft'])) {
+                            $use = $uses[$type . 'Draft'];
+                            $node = $factory->use($use['name']);
+                            if (isset($use['alias'])) {
+                                $node->as($use['alias']);
+                            }
+
+                            $classUses[$type . 'Draft'] = $node->getNode();
                         }
                     }
                 }
@@ -227,16 +289,60 @@ class ClassGenerator
             $annotation = $reader->getClassAnnotation($reflectedClass, DraftableCollection::class);
 
             if ($annotation instanceof DraftableCollection) {
+                list($types, $uses) = $this->getUses($reflectedClass);
+                $classUses = [
+                    'CollectionType' => $factory->use(CollectionType::class),
+                    'CollectionSetter' => $factory->use(CollectionSetter::class),
+                    'ArraySerializable' => $factory->use(ArraySerializable::class)
+                ];
+                foreach ($uses as $alias => $use) {
+                    $node = $factory->use($use['name']);
+                    if (isset($use['alias'])) {
+                        $node->as($use['alias']);
+                    }
+                    $classUses[$alias] = $node->getNode();
+                }
+
+                $classAnnotations = $reader->getClassAnnotations($reflectedClass);
+                $draftAnnotations = [];
+                foreach ($classAnnotations as $classAnnotation) {
+                    if ($classAnnotation instanceof DraftableCollection) {
+                        $newAnnotation = new CollectionSetter();
+                        $newAnnotation->type = $classAnnotation->type;
+                        $classAnnotation = $newAnnotation;
+                    }
+                    $draftAnnotations[get_class($classAnnotation)] = $classAnnotation;
+                }
+                if (isset($draftAnnotations[CollectionType::class])) {
+                    $collAnnotation = $draftAnnotations[CollectionType::class];
+
+                    $draft = $draftAnnotations[CollectionSetter::class];
+                    $draft->elementTypes[] = $collAnnotation->type;
+
+                    if (isset($uses[$collAnnotation->type]['name']) &&
+                        class_exists($uses[$collAnnotation->type]['name'] . 'Draft')
+                    ) {
+                        $class = $uses[$collAnnotation->type]['name'];
+                        $draftClass = $class . 'Draft';
+                        $collAnnotation->type = $collAnnotation->type . 'Draft';
+                        $classUses[$collAnnotation->type] = $factory->use($draftClass);
+
+                        $draft->elementTypes[] = $collAnnotation->type;
+                    }
+                }
+
+                $docComment = '/**' . PHP_EOL;
+                foreach ($draftAnnotations as $draftAnnotation) {
+                    $docComment.= ' * ' . $this->writeAnnotation($draftAnnotation) . PHP_EOL;
+                }
+                $docComment.= ' */';
+
                 $classBuilder = $factory->class($reflectedClass->getShortName() . 'Draft')
-                    ->setDocComment($reflectedClass->getDocComment())
+                    ->setDocComment($docComment)
                     ->extend($reflectedClass->getParentClass()->getShortName());
 
                 $builder = $factory->namespace($reflectedClass->getNamespaceName());
 
-                $classUses = [
-                    'JsonField' => $factory->use(JsonField::class),
-                    'DraftableCollection' => $factory->use(DraftableCollection::class),
-                ];
                 if ($reflectedClass->getNamespaceName() != $reflectedClass->getParentClass()->getNamespaceName()) {
                     $classUses[$reflectedClass->getParentClass()->getShortName()] = $factory->use(
                         $reflectedClass->getParentClass()->getName()

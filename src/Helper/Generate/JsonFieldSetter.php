@@ -11,12 +11,17 @@ use Doctrine\Common\Annotations\Annotation;
  * Class Api
  * @package Commercetools\Core\Helper\Generate
  * @Annotation
- * @Target({"CLASS"})
+ * @Target({"PROPERTY"})
  */
-class DraftableCollection
+class JsonFieldSetter
 {
     /**
-     * @Enum({"map", "list"})
+     * @var string
      */
     public $type;
+
+    /**
+     * @var array
+     */
+    public $paramTypes = [];
 }

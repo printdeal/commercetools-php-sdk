@@ -6,7 +6,13 @@
 namespace Commercetools\Core\Templates\Common;
 
 use Commercetools\Core\Helper\Generate\JsonField;
+use Commercetools\Core\Helper\Generate\Draftable;
 
+/**
+ * Class Money
+ * @package Commercetools\Core\Templates\Common
+ * @Draftable(fields={"currencyCode", "centAmount"})
+ */
 class Money extends JsonObject
 {
     /**  

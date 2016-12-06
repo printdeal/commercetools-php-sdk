@@ -13,7 +13,7 @@ use Commercetools\Core\Helper\Generate\ReferenceType;
 /**
  * Class CategoryReference
  * @package Commercetools\Core\Templates\Category
- * @Draftable(fields={"id", "key"})
+ * @Draftable(fields={"id"})
  * @ReferenceType(type="category")
  */
 class CategoryReference extends Reference

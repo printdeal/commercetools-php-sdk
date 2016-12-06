@@ -14,7 +14,7 @@ use PhpParser\ParserFactory;
 use ReflectionClass;
 use ReflectionProperty;
 
-class DraftSetterVisitor extends GeneratorVisitor
+class JsonFieldSetterVisitor extends GeneratorVisitor
 {
     /**
      * @param Node $node
@@ -32,17 +32,10 @@ class DraftSetterVisitor extends GeneratorVisitor
 
         $reflectedClass = new ReflectionClass((string)$node->namespacedName);
 
-        $draft = $this->reader->getClassAnnotation($reflectedClass, Draftable::class);
-        if (!$draft instanceof Draftable) {
-            return null;
-        }
         $accessibleProperties = $this->getProtectedProperties($reflectedClass);
         foreach ($accessibleProperties as $property) {
-            if (!in_array($property->getName(), $draft->fields)) {
-                continue;
-            }
-            $annotation = $this->reader->getPropertyAnnotation($property, JsonField::class);
-            if (!$annotation instanceof JsonField) {
+            $annotation = $this->reader->getPropertyAnnotation($property, JsonFieldSetter::class);
+            if (!$annotation instanceof JsonFieldSetter) {
                 continue;
             }
 
@@ -55,19 +48,34 @@ class DraftSetterVisitor extends GeneratorVisitor
         return $node;
     }
 
-    public function getPropertySetter(ReflectionProperty $property, JsonField $annotation)
+    public function getPropertySetter(ReflectionProperty $property, JsonFieldSetter $annotation)
     {
         $methodName =  'set'.ucfirst($property->getName());
         $factory = new BuilderFactory();
+        $param = $factory->param($property->getName());
+        $cast = '';
+        if ($annotation->type) {
+            if (!in_array($annotation->type, ['int', 'string', 'float', 'bool'])) {
+                $param->setTypeHint($annotation->type);
+            } else {
+                $cast = '(' . $annotation->type . ')';
+            }
+        }
+        $docComment = '';
+        if ($annotation->paramTypes) {
+            $docComment = '/**' . PHP_EOL . ' *' . PHP_EOL;
+            $docComment .=' * @param ' . implode('|', $annotation->paramTypes) . ' $' . $property->getName() . PHP_EOL;
+            $docComment .=' */';
+        }
+
+        $body =    '    $this->' . $property->getName() .' = ' . $cast . '$' . $property->getName() . ';' . PHP_EOL;
+        $stmts = (new ParserFactory())->create(ParserFactory::PREFER_PHP5)->parse('<?php ' . $body);
+
         $method = $factory->method($methodName)
-            ->addParam($factory->param($property->getName()))
+            ->addParam($param)
             ->makePublic()
-            ->addStmt(
-                new Node\Expr\Assign(
-                    new Node\Expr\Variable('this->' . $property->getName()),
-                    new Node\Expr\Variable($property->getName())
-                )
-            )
+            ->setDocComment($docComment)
+            ->addStmts($stmts)
             ->getNode();
 
         return $method;

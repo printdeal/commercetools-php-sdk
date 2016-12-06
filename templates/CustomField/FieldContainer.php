@@ -4,9 +4,9 @@
  */
 namespace Commercetools\Core\Templates\CustomField;
 
-use Commercetools\Core\Templates\Common\Collection;
 use Commercetools\Core\Helper\Generate\DraftableCollection;
 use Commercetools\Core\Helper\Generate\JsonField;
+use Commercetools\Core\Templates\Common\Collection;
 use Commercetools\Core\Templates\Type;
 use Commercetools\Core\Templates\Type\FieldDefinitionCollection;
 use Commercetools\Core\Templates\Type\FieldDefinition;
@@ -16,7 +16,6 @@ use Commercetools\Core\Templates\Type\TypeReference;
 /**
  * Class FieldContainer
  * @package Commercetools\Core\Templates\CustomField
- * @DraftableCollection()
  */
 class FieldContainer extends Collection
 {

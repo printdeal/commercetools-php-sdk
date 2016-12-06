@@ -4,7 +4,7 @@
  */
 namespace Commercetools\Core\Templates\Common;
 
-use Commercetools\Core\Templates\Category;
+use Commercetools\Core\Templates\Category\CategoryReference;
 use Commercetools\Core\Helper\Generate\JsonField;
 use Commercetools\Core\Helper\Generate\DiscriminatorColumn;
 
@@ -16,7 +16,7 @@ use Commercetools\Core\Helper\Generate\DiscriminatorColumn;
 class Reference extends ResourceIdentifier
 {
     const TYPES = [
-        'category' => Category::class
+        'category' => CategoryReference::class
     ];
 
     /**

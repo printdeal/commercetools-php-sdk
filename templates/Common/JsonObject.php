@@ -4,11 +4,13 @@
  */
 namespace Commercetools\Core\Templates\Common;
 
+use Commercetools\Core\Helper\Generate\ArraySerializable;
+
 class JsonObject implements \JsonSerializable, ArraySerializable
 {
     private $rawData;
 
-    public function __construct(array $data)
+    public function __construct(array $data =[])
     {
         $this->rawData = $data;
     }
@@ -51,5 +53,10 @@ class JsonObject implements \JsonSerializable, ArraySerializable
         );
         $data = array_merge($this->rawData, $data);
         return $data;
+    }
+
+    public function __set($name, $value)
+    {
+        throw new \BadMethodCallException('Setting values is not allowed');
     }
 }

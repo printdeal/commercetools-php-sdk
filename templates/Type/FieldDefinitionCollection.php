@@ -5,8 +5,8 @@
 
 namespace Commercetools\Core\Templates\Type;
 
-use Commercetools\Core\Templates\Common\Collection;
 use Commercetools\Core\Helper\Generate\CollectionType;
+use Commercetools\Core\Templates\Common\Collection;
 
 /**
  * Class FieldDefinitionCollection

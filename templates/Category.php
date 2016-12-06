@@ -8,6 +8,7 @@ use Commercetools\Core\Templates\Category\CategoryReference;
 use DateTimeImmutable;
 use Commercetools\Core\Helper\Generate\Draftable;
 use Commercetools\Core\Helper\Generate\JsonField;
+use Commercetools\Core\Helper\Generate\JsonFieldSetter;
 use Commercetools\Core\Templates\Common\JsonObject;
 use Commercetools\Core\Templates\Category\CategoryReferenceCollection;
 use Commercetools\Core\Templates\Common\LocalizedString;

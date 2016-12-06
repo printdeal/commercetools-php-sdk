@@ -1,8 +1,8 @@
-<?php 
+<?php
 /**
  * @author @jayS-de <jens.schulze@commercetools.de>
  */
-namespace Commercetools\Core\Templates\Common;
+namespace Commercetools\Core\Helper\Generate;
 
 interface ArraySerializable
 {

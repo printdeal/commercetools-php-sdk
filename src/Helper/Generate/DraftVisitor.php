@@ -24,14 +24,14 @@ class DraftVisitor extends GeneratorVisitor
         $annotation = $this->reader->getClassAnnotation($reflectedClass, Draftable::class);
 
         if ($annotation instanceof Draftable) {
-            $this->draftableClasses[] = $reflectedClass;
+            $this->draftableClasses[$reflectedClass->getName()] = $reflectedClass;
             return null;
         }
 
         $annotation = $this->reader->getClassAnnotation($reflectedClass, DraftableCollection::class);
 
         if ($annotation instanceof DraftableCollection) {
-            $this->draftableClasses[] = $reflectedClass;
+            $this->draftableClasses[$reflectedClass->getName()] = $reflectedClass;
             return null;
         }
     }
