@@ -13,11 +13,13 @@
   "autoload": {
     "psr-4": {
       "Commercetools\\Core\\": "src/Core/",
-      "Commercetools\\Commons\\": "src/Commons/"
+      "Commercetools\\Commons\\": "src/Commons/",
+      "Commercetools\\Model\\": "src/Model/"
     }
   },
   "autoload-dev": {
     "psr-4": {
+      "Commercetools\\Generator\\": "src/Generator/",
       "Commercetools\\Core\\": [
         "tests/unit/",
         "tests/integration/"
@@ -45,7 +47,7 @@
     "squizlabs/php_codesniffer": "^2.6",
     "sebastian/phpcpd": "@stable",
     "pdepend/pdepend": "@stable",
-    "phploc/phploc": "^2.0",
+    "phploc/phploc": "@stable",
     "mayflower/php-codebrowser": "^1.0",
     "doctrine/cache": "^1.6",
     "monolog/monolog": "^1.12",
@@ -58,7 +60,11 @@
     "cache/redis-adapter": "^0.4.0",
     "cache/filesystem-adapter": "^0.3.0",
     "cache/void-adapter": "^0.3",
-    "incenteev/composer-parameter-handler": "^2.1"
+    "incenteev/composer-parameter-handler": "^2.1",
+    "symfony/console": "^3.0",
+    "nikic/php-parser": "^2.0",
+    "doctrine/annotations": "^1.2",
+    "henrikbjorn/lurker": "^1.2"
   },
   "replaces": {
     "commercetools/commons": "*"
