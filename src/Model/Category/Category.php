@@ -6,6 +6,7 @@ use Commercetools\Core\Model\Category\CategoryReferenceCollection;
 use Commercetools\Core\Model\Common\AssetCollection;
 use Commercetools\Core\Model\Common\LocalizedString;
 use Commercetools\Core\Model\CustomField\CustomFieldObject;
+use Commercetools\Model\Reference;
 use Commercetools\Model\Resource;
 use Commercetools\Generator\JsonField;
 use Commercetools\Generator\JsonResource;
@@ -39,8 +40,8 @@ interface Category extends Resource
     public function getAncestors();
 
     /**
-     * @JsonField(type="CategoryReferenceModel")
-     * @return CategoryReference
+     * @JsonField(type="Reference")
+     * @return Reference
      */
     public function getParent();
 

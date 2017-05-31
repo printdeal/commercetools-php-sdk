@@ -77,13 +77,13 @@ class ModelGenerator
         list($interfaceClasses, $discriminatorClasses, $discriminatorValues) = $this->getInterfaceClasses($path);
 
         $this->generateModels($interfaceClasses, $this->namespace, $path, $outputPath);
-        $this->generateDiscriminatorResolvers(
-            $discriminatorClasses,
-            $discriminatorValues,
-            $this->namespace,
-            $path,
-            $outputPath
-        );
+//        $this->generateDiscriminatorResolvers(
+//            $discriminatorClasses,
+//            $discriminatorValues,
+//            $this->namespace,
+//            $path,
+//            $outputPath
+//        );
 //        $allFiles = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($outputPath));
 //        $phpFiles = new \RegexIterator($allFiles, '/\.php$/');
 //        $this->generateFiles($phpFiles, $this->namespace);
@@ -319,18 +319,33 @@ class ModelGenerator
                     $params .= ', $this->' . $methodName . '()';
                 }
             }
-//            $typeAnnotation = $this->getTypeAnnotation($annotation->type);
-//            if ($typeAnnotation instanceof DiscriminatorColumn) {
-//                $body .= '    $type = ' . $typeAnnotation->callback . '($value, \'' . $typeAnnotation->name . '\');';
-//                $body .= '    $this->' . $propertyName . ' = new $type(' . $params . ');' . PHP_EOL;
-//            } else {
+            $typeAnnotation = $this->getTypeAnnotation($propertyMethod->getDeclaringClass()->getNamespaceName(), $annotation->type);
+            if ($typeAnnotation instanceof Discriminator) {
+                $body .= '    $type = ' . $typeAnnotation->callback . '($value, \'' . $typeAnnotation->name . '\');';
+                $body .= '    $this->' . $propertyName . ' = new $type(' . $params . ');' . PHP_EOL;
+            } else {
                 $body .= '    $this->' . $propertyName .
                     ' = new '.$annotation->type.'(' . $params . ');' . PHP_EOL;
-//            }
+            }
         }
         $body .= '}' . PHP_EOL . 'return $this->' . $propertyName . ';' . PHP_EOL;
         $method->stmts = (new ParserFactory())->create(ParserFactory::PREFER_PHP5)->parse('<?php ' . $body);
         return $method;
+    }
+
+    protected function getTypeAnnotation($namespace, $type)
+    {
+        $reader = new AnnotationReader();
+        $typeAnnotation = false;
+        var_dump($namespace);
+        if (isset($this->uses[$type])) {
+            $typeClass = new ReflectionClass($this->uses[$type]);
+            $typeAnnotation = $reader->getClassAnnotation($typeClass, Discriminator::class);
+        } elseif (class_exists($namespace . '\\' . $type)) {
+            $typeClass = new ReflectionClass($namespace . '\\' . $type);
+            $typeAnnotation = $reader->getClassAnnotation($typeClass, Discriminator::class);
+        }
+        return $typeAnnotation;
     }
 
     protected function tokenize($fileName)
