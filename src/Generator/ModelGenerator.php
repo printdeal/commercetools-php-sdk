@@ -5,6 +5,7 @@
 
 namespace Commercetools\Generator;
 
+use Commercetools\Model\ClassMap;
 use Commercetools\Model\JsonObject;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
@@ -74,9 +75,11 @@ class ModelGenerator
         $this->ensureDirExists($this->outputPath);
         $outputPath = realpath($this->outputPath);
 
-        list($interfaceClasses, $discriminatorClasses, $discriminatorValues) = $this->getInterfaceClasses($path);
+        $resourceClasses = $this->getResourceClasses($path);
 
-        $this->generateModels($interfaceClasses, $this->namespace, $path, $outputPath);
+        $this->generateClassMap($resourceClasses, $this->namespace, $path, $outputPath);
+
+        $this->generateModels($resourceClasses, $this->namespace, $path, $outputPath);
 //        $this->generateDiscriminatorResolvers(
 //            $discriminatorClasses,
 //            $discriminatorValues,
@@ -89,30 +92,69 @@ class ModelGenerator
 //        $this->generateFiles($phpFiles, $this->namespace);
     }
 
-    protected function getInterfaceClasses($path)
+    protected function generateClassMap($resourceClasses, $namespace, $path, $outputPath)
+    {
+        $factory = new BuilderFactory();
+        $builder = $factory->namespace($namespace);
+        $builder->addStmt($factory->use(ClassMap::class));
+        $classBuilder = $factory->class('ResourceClassMap')->extend('ClassMap');
+
+        $types = [];
+        foreach ($resourceClasses as $className => $resourceClass) {
+            /**
+             * @var ReflectionClass $reflectedClass
+             */
+            $reflectedClass = $resourceClass[ReflectionClass::class];
+            $relativeNamespace = $this->relativeNamespace($path, $reflectedClass);
+            $modelClass = $namespace . '\\' . $relativeNamespace . ($relativeNamespace ?  '\\' : '')  .
+                $reflectedClass->getShortName() . static::MODEL_SUFFIX;
+//                $builder->addStmt($factory->use($reflectedClass->getName()));
+                $types[] = new Expr\ArrayItem(
+                    new Expr\ClassConstFetch(
+                        new Node\Name('\\' . $modelClass), 'class'
+                    ),
+                    new Expr\ClassConstFetch(
+                        new Node\Name('\\' . $reflectedClass->getName()), 'class'
+                    )
+                );
+
+        }
+        $classBuilder->addStmt(
+            $factory->property('types')->makeProtected()->setDefault(
+                new Expr\Array_($types, ['kind' => Expr\Array_::KIND_SHORT])
+            )
+        );
+        $builder->addStmt($classBuilder);
+
+        $fileName = $outputPath . '/ResourceClassMap.php';
+        $node = $builder->getNode();
+        $stmts = [$node];
+        $this->writeClass($fileName, $stmts);
+    }
+
+    public function generateModels($resourceClasses, $namespace, $path, $outputPath)
+    {
+        foreach ($resourceClasses as $className => $resourceClass) {
+            $this->generateReadModelFromInterface($resourceClass[ReflectionClass::class], $namespace, $path, $outputPath);
+        }
+    }
+
+    protected function getResourceClasses($path)
     {
         $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP5);
         $allFiles = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
         $phpFiles = new \RegexIterator($allFiles, '/\.php$/');
-        $interfaceVisitor = new ModelInterfaceVisitor();
-        $discriminatorVisitor = new DiscriminatorVisitor();
-        $discriminatorValueVisitor = new DiscriminatorValueVisitor();
+        $jsonResourceVisitor = new JsonResourceVisitor();
         foreach ($phpFiles as $file) {
             $code = file_get_contents($file);
             $stmts = $parser->parse($code);
             $traverser = new NodeTraverser();
             $traverser->addVisitor(new NameResolver()); // we will need resolved names
-            $traverser->addVisitor($interfaceVisitor);
-            $traverser->addVisitor($discriminatorVisitor);
-            $traverser->addVisitor($discriminatorValueVisitor);
+            $traverser->addVisitor($jsonResourceVisitor);
 
             $traverser->traverse($stmts);
         }
-        return [
-            $interfaceVisitor->getInterfaceClasses(),
-            $discriminatorVisitor->getDiscriminatorClasses(),
-            $discriminatorValueVisitor->getDiscriminatorValues()
-        ];
+        return $jsonResourceVisitor->getResourceClasses();
     }
 
     protected function generateReadModelFromInterface(\ReflectionClass $reflectedClass, $namespace, $path, $outputPath)
@@ -120,9 +162,8 @@ class ModelGenerator
         $reader = new AnnotationReader();
         $factory = new BuilderFactory();
 
-        $diffNamespace = $this->getDiffNamespace($path, $reflectedClass);
-
-        $modelNamespace = $namespace . $diffNamespace;
+        $diffNamespace = $this->relativeNamespace($path, $reflectedClass);
+        $modelNamespace = $namespace . ($diffNamespace ? '\\' : ''). $diffNamespace;
 
         $builder = $factory->namespace($modelNamespace);
 
@@ -134,67 +175,14 @@ class ModelGenerator
         $classBuilder = $factory->class($className)
             ->implement($reflectedClass->getShortName());
 
-        list($types, $uses) = $this->getUses($reflectedClass);
+        list($parentClassShortName, $parentClass) = $this->getParentClass($reflectedClass, $namespace, $path);
+        $classUses[$parentClassShortName] = $factory->use($parentClass);
+        $classBuilder = $classBuilder->extend($parentClassShortName);
 
-        $interfaceParents = $reflectedClass->getInterfaceNames();
-        $annotation = $reader->getClassAnnotation($reflectedClass, JsonResource::class);
-        if ($annotation instanceof JsonResource && $annotation->type) {
-            $parentClassName = $annotation->type;
-        } elseif (count($interfaceParents)) {
-            $parentClass = new ReflectionClass(current($interfaceParents));
-            $diffNamespace = $this->getDiffNamespace($path, $parentClass);
-            $parentClassName = $parentClass->getShortName() . self::MODEL_SUFFIX;
-            $parentNamespace = $namespace . ($diffNamespace ? '\\' . $diffNamespace : '');
-            if ($parentNamespace !== $modelNamespace) {
-                $parentClassUse = $parentNamespace . '\\' . $parentClass->getShortName() . self::MODEL_SUFFIX;
-                $classUses[$parentClassName] = $factory->use($parentClassUse);
-            }
-        } else {
-            $parentClassName = 'JsonObject';
-            $classUses[$parentClassName] = $factory->use(JsonObject::class);
-        }
-
-        if (isset($uses[$parentClassName])) {
-            $use = $uses[$parentClassName];
-            $node = $factory->use($use['name']);
-            if (isset($use['alias'])) {
-                $node->as($use['alias']);
-            }
-            $classUses[$parentClassName] = $node->getNode();
-        }
-
-        $classBuilder = $classBuilder->extend($parentClassName);
-
-
-        foreach ($reflectedClass->getMethods() as $reflectionMethod) {
-            if ($reflectionMethod->getDeclaringClass()->getName() !== $reflectedClass->getName()) {
-                continue;
-            }
-            $propertyName = lcfirst(str_replace('get', '', $reflectionMethod->getName()));
-
-            $property = $factory
-//                ->setDocComment($docComment);
-                ->property($propertyName)
-            ;
-
-            $annotation = $reader->getMethodAnnotation($reflectionMethod, JsonField::class);
-            $propertyMethod = $this->getPropertyGetter($reflectionMethod, $propertyName, $annotation);
-
-            if (isset($types[$reflectionMethod->getName()])) {
-                $type = $types[$reflectionMethod->getName()];
-                if (isset($uses[$type])) {
-                    $use = $uses[$type];
-                    $node = $factory->use($use['name']);
-                    if (isset($use['alias'])) {
-                        $node->as($use['alias']);
-                    }
-                    $classUses[$type] = $node->getNode();
-                }
-            }
-
-            $classBuilder->addStmt($property);
-            $classBuilder->addStmt($propertyMethod);
-        }
+        $propertyStmts = $this->createPropertiesFromResourceInterface($reflectedClass);
+        $propertyGetterStmts = $this->createPropertyGetterFromResourceInterface($reflectedClass);
+        $classBuilder->addStmts($propertyStmts);
+        $classBuilder->addStmts($propertyGetterStmts);
 
         $builder->addStmts(array_values($classUses));
         $builder->addStmt($classBuilder);
@@ -210,9 +198,89 @@ class ModelGenerator
         $this->writeClass($fileName, $stmts);
     }
 
-    protected function getDiffNamespace($path, ReflectionClass $reflectionClass)
+    protected function getParentClass(ReflectionClass $reflectedClass, $namespace, $path)
     {
-        return str_replace('/', '\\', str_replace($path, '', dirname($reflectionClass->getFileName())));
+        $reader = new AnnotationReader();
+
+        $reflectedJsonObject = new ReflectionClass(JsonObject::class);
+        $parentClassShortName = $reflectedJsonObject->getShortName();
+        $parentClassName = $reflectedJsonObject->getName();
+
+        $annotation = $reader->getClassAnnotation($reflectedClass, JsonResource::class);
+        $interfaceParents = $reflectedClass->getInterfaceNames();
+        if ($annotation instanceof JsonResource && $annotation->type) {
+            $uses = $this->getUses($reflectedClass);
+            var_dump($uses);
+            $parentClassShortName = $parentClassName = $annotation->type;
+            if (isset($uses[$parentClassShortName])) {
+                $parentClassName = $uses[$parentClassShortName]['name'];
+            }
+        } elseif ($reflectedClass->isInterface() && count($interfaceParents) > 0) {
+            $parentClass = new ReflectionClass(current($interfaceParents));
+            $annotation = $reader->getClassAnnotation($parentClass, JsonResource::class);
+            if ($annotation instanceof JsonResource) {
+                $parentNamespace = $namespace . $this->relativeNamespace($path, $parentClass);
+                $parentClassShortName = $parentClass->getShortName() . self::MODEL_SUFFIX;
+                $parentClassName = $parentNamespace . '\\' . $parentClassShortName;
+            }
+        }
+
+        return [$parentClassShortName, $parentClassName];
+    }
+    protected function createPropertiesFromResourceInterface(ReflectionClass $reflectedClass)
+    {
+        $factory = new BuilderFactory();
+        $stmts = [];
+        foreach ($reflectedClass->getMethods() as $reflectionMethod) {
+            if ($reflectionMethod->getDeclaringClass()->getName() !== $reflectedClass->getName()) {
+                continue;
+            }
+            $propertyName = lcfirst(str_replace('get', '', $reflectionMethod->getName()));
+
+            $property = $factory
+                ->property($propertyName)
+            ;
+
+            $stmts[] = $property;
+        }
+
+        return $stmts;
+    }
+
+    protected function createPropertyGetterFromResourceInterface(ReflectionClass $reflectedClass)
+    {
+        $reader = new AnnotationReader();
+        $stmts = [];
+        foreach ($reflectedClass->getMethods() as $reflectionMethod) {
+            if ($reflectionMethod->getDeclaringClass()->getName() !== $reflectedClass->getName()) {
+                continue;
+            }
+            $propertyName = lcfirst(str_replace('get', '', $reflectionMethod->getName()));
+
+            $annotation = $reader->getMethodAnnotation($reflectionMethod, JsonField::class);
+            $propertyMethod = $this->getPropertyGetter($reflectionMethod, $propertyName, $annotation);
+
+//            if (isset($types[$reflectionMethod->getName()])) {
+//                $type = $types[$reflectionMethod->getName()];
+//                if (isset($uses[$type])) {
+//                    $use = $uses[$type];
+//                    $node = $factory->use($use['name']);
+//                    if (isset($use['alias'])) {
+//                        $node->as($use['alias']);
+//                    }
+//                    $classUses[$type] = $node->getNode();
+//                }
+//            }
+
+            $stmts[] = $propertyMethod;
+        }
+
+        return $stmts;
+    }
+
+    protected function relativeNamespace($path, ReflectionClass $reflectionClass)
+    {
+        return trim(str_replace('/', '\\', str_replace($path, '', dirname($reflectionClass->getFileName()))), '\\');
     }
 
     public function generateDiscriminatorResolvers(
@@ -238,7 +306,7 @@ class ModelGenerator
             $classValues = $discriminatorValues[$discriminatorClass];
             foreach ($classValues as $valueClass => $discriminatorValue) {
                 $reflectedValueClass = new ReflectionClass($valueClass);
-                $diffNamespace = $this->getDiffNamespace($path, $reflectedValueClass);
+                $diffNamespace = $this->relativeNamespace($path, $reflectedValueClass);
                 $valueModelClassNamespace = $namespace . ($diffNamespace ? '\\' . $diffNamespace : '');
                 $valueModelClass = $valueModelClassNamespace . '\\' . $reflectedValueClass->getShortName() . self::MODEL_SUFFIX;
                 $types[] = new Expr\ArrayItem(
@@ -276,22 +344,12 @@ class ModelGenerator
         $traverser->addVisitor(new NameResolver()); // we will need resolved names
         $traverser->addVisitor($useVisitor);
         $traverser->traverse($stmts);
-        return [$useVisitor->getPropertyTypes(), $useVisitor->getUses()];
-    }
-
-    public function generateModels($interfaceClasses, $namespace, $path, $outputPath)
-    {
-        /**
-         * @var \ReflectionClass $reflectedClass
-         */
-        foreach ($interfaceClasses as $reflectedClass) {
-            $this->generateReadModelFromInterface($reflectedClass, $namespace, $path, $outputPath);
-        }
+        return $useVisitor->getUses();
     }
 
     protected function writeClass($filename, $stmts)
     {
-        $printer = new PrettyPrinter\Standard();
+        $printer = new MyPrettyPrinter();
         $this->ensureDirExists(dirname($filename));
         file_put_contents($filename, '<?php ' . PHP_EOL . $printer->prettyPrint($stmts));
     }

@@ -8,7 +8,7 @@ use PhpParser\Node;
 use PhpParser\Node\Stmt\Interface_;
 use PhpParser\NodeVisitorAbstract;
 
-class ModelInterfaceVisitor extends GeneratorVisitor
+class InterfaceModelVisitor extends GeneratorVisitor
 {
     private $interfaceClasses = [];
 

@@ -8,6 +8,7 @@ namespace Commercetools\Model\Category;
 
 use Commercetools\Model\Reference;
 use Commercetools\Generator\JsonResource;
+use Commercetools\Generator\JsonField;
 use Commercetools\Generator\DiscriminatorValue;
 
 /**
@@ -16,5 +17,9 @@ use Commercetools\Generator\DiscriminatorValue;
  */
 interface CategoryReference extends Reference
 {
-
+    /**
+     * @JsonField(type="Category")
+     * @return Category
+     */
+    public function getObj();
 }

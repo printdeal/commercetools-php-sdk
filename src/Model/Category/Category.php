@@ -40,8 +40,8 @@ interface Category extends Resource
     public function getAncestors();
 
     /**
-     * @JsonField(type="Reference")
-     * @return Reference
+     * @JsonField(type="CategoryReference")
+     * @return CategoryReference
      */
     public function getParent();
 

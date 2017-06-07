@@ -38,7 +38,7 @@ class GenerateModelsCommand extends Command
         $this->generator = new ModelGenerator(
             $path,
             $outputPath,
-            'Commercetools\Data\Model'
+            'Commercetools\Data'
         );
         $this->generator->run();
     }
