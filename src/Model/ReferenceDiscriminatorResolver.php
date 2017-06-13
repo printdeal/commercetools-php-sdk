@@ -8,7 +8,7 @@ namespace Commercetools\Model;
 use Commercetools\Data\Model\CategoryReferenceModel;
 use Commercetools\Data\Model\ReferenceModel;
 
-class ReferenceDiscriminatorResolver
+class DiscriminatorResolver
 {
     const TYPES = [
         'category' => CategoryReferenceModel::class

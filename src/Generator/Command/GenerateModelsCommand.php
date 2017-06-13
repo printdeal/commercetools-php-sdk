@@ -34,11 +34,11 @@ class GenerateModelsCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $path = __DIR__ . '/../../Model';
-        $outputPath = __DIR__ . '/../../Data';
+        $outputPath = __DIR__ . '/../../../generated/Model';
         $this->generator = new ModelGenerator(
             $path,
             $outputPath,
-            'Commercetools\Data'
+            'Commercetools\\Model'
         );
         $this->generator->run();
     }

@@ -9,11 +9,11 @@ namespace Commercetools\Model;
 
 abstract class ClassMap
 {
-    protected $types = [];
+    protected static $types = [];
 
     public function getMappedClass($class) {
-        if (isset($this->types[$class])) {
-            return $this->types[$class];
+        if (isset(static::$types[$class])) {
+            return static::$types[$class];
         }
         return $class;
     }

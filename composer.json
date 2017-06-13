@@ -14,7 +14,10 @@
     "psr-4": {
       "Commercetools\\Core\\": "src/Core/",
       "Commercetools\\Commons\\": "src/Commons/",
-      "Commercetools\\Model\\": "src/Model/"
+      "Commercetools\\Model\\": [
+        "src/Model/",
+        "generated/Model/"
+      ]
     }
   },
   "autoload-dev": {
