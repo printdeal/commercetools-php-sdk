@@ -9,10 +9,12 @@ use Commercetools\Core\Model\CustomField\CustomFieldObject;
 use Commercetools\Model\Reference;
 use Commercetools\Model\Resource;
 use Commercetools\Generator\JsonField;
+use Commercetools\Generator\CollectionType;
 use Commercetools\Generator\JsonResource;
 
 /**
  * @JsonResource()
+ * @CollectionType(indexes={"id"})
  */
 interface Category extends Resource
 {

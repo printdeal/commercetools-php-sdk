@@ -4,12 +4,12 @@
  */
 namespace Commercetools\Generator\Command;
 
+use Commercetools\Generator\AnnotationRunner;
+use Commercetools\Generator\ClassMapProcessor;
+use Commercetools\Generator\DiscriminatorProcessor;
 use Commercetools\Generator\ModelGenerator;
-use Lurker\Event\FilesystemEvent;
-use Lurker\ResourceWatcher;
-use Lurker\Tracker\InotifyTracker;
+use Commercetools\Generator\ResourceProcessor;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -33,13 +33,17 @@ class GenerateModelsCommand extends Command
     }
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $path = __DIR__ . '/../../Model';
-        $outputPath = __DIR__ . '/../../../generated/Model';
-        $this->generator = new ModelGenerator(
-            $path,
-            $outputPath,
-            'Commercetools\\Model'
-        );
-        $this->generator->run();
+        $namespace = 'Commercetools\\Model';
+        $path = realpath(__DIR__ . '/../../Model');
+        $outputPath = realpath(__DIR__ . '/../../../generated/Model');
+
+        $processors = [
+            new ClassMapProcessor($namespace, $outputPath),
+            new ResourceProcessor($namespace, $path, $outputPath),
+            new DiscriminatorProcessor($path, $outputPath),
+        ];
+        $runner = new AnnotationRunner($path, $processors);
+
+        $runner->run();
     }
 }

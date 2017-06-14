@@ -13,4 +13,13 @@ use Doctrine\Common\Annotations\Annotation;
  */
 class CollectionType
 {
+    /**
+     * @var string
+     */
+    public $type;
+
+    /**
+     * @var array
+     */
+    public $indexes;
 }

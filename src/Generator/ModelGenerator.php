@@ -6,6 +6,7 @@
 namespace Commercetools\Generator;
 
 use Commercetools\Model\ClassMap;
+use Commercetools\Model\Collection;
 use Commercetools\Model\JsonObject;
 use Commercetools\Model\ResourceClassMap;
 use Doctrine\Common\Annotations\AnnotationReader;
@@ -25,6 +26,7 @@ use ReflectionClass;
 class ModelGenerator
 {
     const MODEL_SUFFIX = 'Model';
+    const COLLECTION_SUFFIX = 'Collection';
 
     /**
      * @var \ReflectionClass
@@ -52,7 +54,6 @@ class ModelGenerator
             Discriminator::class,
             DiscriminatorValue::class,
             CollectionType::class,
-            CollectionIndex::class
 //            JsonFieldSetter::class,
 //            CollectionType::class,
 //            Draftable::class,
@@ -71,11 +72,6 @@ class ModelGenerator
     public function run()
     {
         $path = realpath($this->path);
-
-        $allFiles = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
-        $phpFiles = new \RegexIterator($allFiles, '/\.php$/');
-
-        $path = realpath($this->path);
         $this->ensureDirExists($this->outputPath);
         $outputPath = realpath($this->outputPath);
 
@@ -91,9 +87,7 @@ class ModelGenerator
             $path,
             $outputPath
         );
-//        $allFiles = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($outputPath));
-//        $phpFiles = new \RegexIterator($allFiles, '/\.php$/');
-//        $this->generateFiles($phpFiles, $this->namespace);
+        $this->generateCollectionInterfaces($jsonResourceVisitor->getCollectionClasses(), $this->namespace, $path, $outputPath);
     }
 
     protected function generateClassMap($resourceClasses, $namespace, $outputPath)
@@ -187,6 +181,45 @@ class ModelGenerator
         $classUses = array_merge($classUses, $getterUses);
         $classBuilder->addStmts($propertyStmts);
         $classBuilder->addStmts($propertyGetterStmts);
+
+        $builder->addStmts(array_values($classUses));
+        $builder->addStmt($classBuilder);
+        $node = $builder->getNode();
+        $stmts = [$node];
+
+        $traverser = new NodeTraverser();
+        $traverser->addVisitor(new NameResolver()); // we will need resolved names
+        $traverser->addVisitor(new NamespaceChangeVisitor($namespace, $namespace)); // we will shorten the resolved names
+        $traverser->traverse($stmts);
+
+        $fileName = $modelPath . '/' . $className . '.php';
+        $this->writeClass($fileName, $stmts);
+    }
+
+    protected function generateCollectionInterfaces($collectionClasses, $namespace, $path, $outputPath)
+    {
+        foreach ($collectionClasses as $className => $collectionClass) {
+            $this->generateCollectionInterface($collectionClass, $namespace, $path, $outputPath);
+        }
+    }
+
+    protected function generateCollectionInterface($collectionClass, $namespace, $path, $outputPath)
+    {
+        $factory = new BuilderFactory();
+
+        /**
+         * @var ReflectionClass $reflectedClass
+         */
+        $reflectedClass = $collectionClass[\ReflectionClass::class];
+        $builder = $factory->namespace($reflectedClass->getNamespaceName());
+
+        $modelPath = str_replace($path, $outputPath, dirname($reflectedClass->getFileName()));
+
+        $classUses['Collection'] = $factory->use(Collection::class);
+        $className = $reflectedClass->getShortName() . self::COLLECTION_SUFFIX;
+        $classBuilder = $factory->interface($className)
+            ->extend('Collection');
+//            ->extend($reflectedClass->getShortName());
 
         $builder->addStmts(array_values($classUses));
         $builder->addStmt($classBuilder);
