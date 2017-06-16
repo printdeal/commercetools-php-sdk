@@ -9,9 +9,7 @@ namespace Commercetools\Generator;
 
 interface Processor
 {
-    public function process();
+    public function process(\ReflectionClass $class, $annotation);
 
-    public function getAnnotations();
-
-    public function setResult($annotation, $result);
+    public function getAnnotation();
 }

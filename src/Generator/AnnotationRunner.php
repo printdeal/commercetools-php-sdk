@@ -58,26 +58,43 @@ class AnnotationRunner
 
         $allFiles = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
         $phpFiles = new \RegexIterator($allFiles, '/\.php$/');
+        $files = [];
+        foreach ($phpFiles as $file) {
+            $files[] = $file;
+        }
 
-        $annotationResults = [];
-        foreach ($this->annotations as $annotation) {
-            $annotationVisitor = new AnnotationVisitor($annotation);
-            $traverser = new NodeTraverser();
-            $traverser->addVisitor(new NameResolver()); // we will need resolved names
-            $traverser->addVisitor($annotationVisitor);
-            foreach ($phpFiles as $file) {
+        do {
+            $file = array_shift($files);
+            foreach ($this->processors as $processor) {
+                $annotationVisitor = new AnnotationVisitor($processor->getAnnotation());
+                $traverser = new NodeTraverser();
+                $traverser->addVisitor(new NameResolver()); // we will need resolved names
+                $traverser->addVisitor($annotationVisitor);
                 $code = file_get_contents($file);
                 $stmts = $parser->parse($code);
 
                 $traverser->traverse($stmts);
+                $annotation = $processor->getAnnotation();
+                if ($annotationVisitor->getAnnotatedClass() instanceof $annotation) {
+                    $processor->process($annotationVisitor->getReflectedClass(), $annotationVisitor->getAnnotatedClass());
+                }
             }
-            $annotationResults[$annotation] = $annotationVisitor->getAnnotatedClasses();
-        }
-        foreach ($this->processors as $processor) {
-            foreach ($processor->getAnnotations() as $annotation) {
-                $processor->setResult($annotation, $annotationResults[$annotation]);
-            }
-            $processor->process();
-        }
+        } while (count($files) > 0);
+
+//        foreach ($this->processors as $processor) {
+//            $annotationVisitor = new AnnotationVisitor($processor->getAnnotation());
+//            $traverser = new NodeTraverser();
+//            $traverser->addVisitor(new NameResolver()); // we will need resolved names
+//            $traverser->addVisitor($annotationVisitor);
+//            foreach ($phpFiles as $file) {
+//                $code = file_get_contents($file);
+//                $stmts = $parser->parse($code);
+//
+//                $traverser->traverse($stmts);
+//            }
+//            foreach ($annotationVisitor->getAnnotatedClasses() as $className => $annotation) {
+//                $processor->process($className, $annotation);
+//            }
+//        }
     }
 }

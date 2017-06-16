@@ -20,6 +20,7 @@ class DiscriminatorProcessor extends AbstractProcessor
 {
     private $path;
     private $outputPath;
+    private $discriminatorValueClasses = [];
 
     /**
      * ResourceProcessor constructor.
@@ -35,58 +36,54 @@ class DiscriminatorProcessor extends AbstractProcessor
     /**
      * @inheritDoc
      */
-    public function process()
+    public function process(ReflectionClass $class, $annotation)
     {
-        var_dump($this);
-        $discriminatorValues = $this->getResult(DiscriminatorValue::class);
+        $parentInterface = current($class->getInterfaceNames());
+        $this->discriminatorValueClasses[$parentInterface][$class->getName()][\ReflectionClass::class] = $class;
+        $this->discriminatorValueClasses[$parentInterface][$class->getName()][DiscriminatorValue::class] = $annotation;
 
-        foreach ($this->getResult(Discriminator::class) as $discriminatorClass => $infos) {
+        $reflectedClass = new ReflectionClass($parentInterface);
+        $factory = new BuilderFactory();
+        $builder = $factory->namespace($reflectedClass->getNamespaceName());
+
+        $modelPath = str_replace($this->path, $this->outputPath, dirname($reflectedClass->getFileName()));
+
+        $className = $reflectedClass->getShortName() . 'DiscriminatorResolver';
+        $classBuilder = $factory->class($className);
+        $types = [];
+        /**
+         * @var DiscriminatorValue $discriminatorValue
+         */
+        $classValues = $this->discriminatorValueClasses[$parentInterface];
+        foreach ($classValues as $valueClass => $discriminatorValue) {
             /**
-             * @var ReflectionClass $reflectedClass
+             * @var ReflectionClass $reflectedValueClass
              */
-            $reflectedClass = $infos[ReflectionClass::class];
-            $factory = new BuilderFactory();
-            $builder = $factory->namespace($reflectedClass->getNamespaceName());
-
-            $modelPath = str_replace($this->path, $this->outputPath, dirname($reflectedClass->getFileName()));
-
-            $className = $reflectedClass->getShortName() . 'DiscriminatorResolver';
-            $classBuilder = $factory->class($className);
-            $types = [];
-            /**
-             * @var DiscriminatorValue $discriminatorValue
-             */
-            $classValues = $discriminatorValues[$discriminatorClass];
-            foreach ($classValues as $valueClass => $discriminatorValue) {
-                /**
-                 * @var ReflectionClass $reflectedValueClass
-                 */
-                $reflectedValueClass = $discriminatorValue[ReflectionClass::class];
-                $types[] = new Expr\ArrayItem(
-                    new Expr\ClassConstFetch(
-                        new Node\Name($reflectedValueClass->getShortName()), 'class'
-                    ),
-                    new Scalar\String_($discriminatorValue[DiscriminatorValue::class]->value)
-                );
-                $builder->addStmt($factory->use($reflectedValueClass->getName()));
-            }
-            $classBuilder->addStmt(new Stmt\ClassConst([
-                new Node\Const_('TYPES', new Expr\Array_($types, ['kind' => Expr\Array_::KIND_SHORT]))
-            ]));
-            $classBuilder->addStmt($this->getDiscriminatorResolverMethod($reflectedClass));
-            $builder->addStmt($classBuilder);
-
-            $node = $builder->getNode();
-            $stmts = [$node];
-
-            $traverser = new NodeTraverser();
-            $traverser->addVisitor(new NameResolver()); // we will need resolved names
-            $traverser->addVisitor(new NamespaceChangeVisitor($reflectedClass->getNamespaceName(), $reflectedClass->getNamespaceName())); // we will shorten the resolved names
-            $traverser->traverse($stmts);
-
-            $fileName = $modelPath . '/' . $className . '.php';
-            $this->writeClass($fileName, $stmts);
+            $reflectedValueClass = $discriminatorValue[ReflectionClass::class];
+            $types[] = new Expr\ArrayItem(
+                new Expr\ClassConstFetch(
+                    new Node\Name($reflectedValueClass->getShortName()), 'class'
+                ),
+                new Scalar\String_($discriminatorValue[DiscriminatorValue::class]->value)
+            );
+            $builder->addStmt($factory->use($reflectedValueClass->getName()));
         }
+        $classBuilder->addStmt(new Stmt\ClassConst([
+            new Node\Const_('TYPES', new Expr\Array_($types, ['kind' => Expr\Array_::KIND_SHORT]))
+        ]));
+        $classBuilder->addStmt($this->getDiscriminatorResolverMethod($reflectedClass));
+        $builder->addStmt($classBuilder);
+
+        $node = $builder->getNode();
+        $stmts = [$node];
+
+        $traverser = new NodeTraverser();
+        $traverser->addVisitor(new NameResolver()); // we will need resolved names
+        $traverser->addVisitor(new NamespaceChangeVisitor($reflectedClass->getNamespaceName(), $reflectedClass->getNamespaceName())); // we will shorten the resolved names
+        $traverser->traverse($stmts);
+
+        $fileName = $modelPath . '/' . $className . '.php';
+        $this->writeClass($fileName, $stmts);
     }
 
     public function getDiscriminatorResolverMethod(\ReflectionClass $reflectionClass)
@@ -109,8 +106,8 @@ class DiscriminatorProcessor extends AbstractProcessor
         return $method;
     }
 
-    public function getAnnotations()
+    public function getAnnotation()
     {
-        return [Discriminator::class, DiscriminatorValue::class];
+        return DiscriminatorValue::class;
     }
 }

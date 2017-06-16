@@ -9,18 +9,6 @@ abstract class AbstractProcessor implements Processor
 {
     const MODEL_SUFFIX = 'Model';
 
-    private $result;
-
-    public function setResult($annotation, $result)
-    {
-        $this->result[$annotation] = $result;
-    }
-
-    public function getResult($annotation)
-    {
-        return $this->result[$annotation];
-    }
-
     protected function writeClass($filename, $stmts)
     {
         $printer = new MyPrettyPrinter();

@@ -39,19 +39,17 @@ class ResourceProcessor extends AbstractProcessor
     }
 
 
-    public function getAnnotations()
+    public function getAnnotation()
     {
-        return [JsonResource::class];
+        return JsonResource::class;
     }
 
     /**
      * @inheritDoc
      */
-    public function process()
+    public function process(ReflectionClass $class, $annotation)
     {
-        foreach ($this->getResult(JsonResource::class) as $className => $resourceClass) {
-            $this->generateReadModelFromInterface($resourceClass[ReflectionClass::class]);
-        }
+        $this->generateReadModelFromInterface($class);
     }
 
     protected function generateReadModelFromInterface(\ReflectionClass $reflectedClass)
@@ -90,7 +88,6 @@ class ResourceProcessor extends AbstractProcessor
         $traverser->traverse($stmts);
 
         $fileName = $modelPath . '/' . $className . '.php';
-        var_dump($fileName);
         $this->writeClass($fileName, $stmts);
     }
 

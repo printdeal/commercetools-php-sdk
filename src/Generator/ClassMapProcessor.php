@@ -17,6 +17,7 @@ class ClassMapProcessor extends AbstractProcessor
 {
     private $namespace;
     private $outputPath;
+    private $reflectedClasses = [];
 
     public function __construct($namespace, $outputPath)
     {
@@ -24,27 +25,24 @@ class ClassMapProcessor extends AbstractProcessor
         $this->outputPath = $outputPath;
     }
 
-    public function getAnnotations()
+    public function getAnnotation()
     {
-        return [JsonResource::class];
+        return JsonResource::class;
     }
 
-    /**
-     * @param $annotationResult
-     */
-    public function process()
+    public function process(ReflectionClass $class, $annotation)
     {
+        $this->reflectedClasses[$class->getName()] = $class;
         $factory = new BuilderFactory();
         $builder = $factory->namespace($this->namespace);
         $builder->addStmt($factory->use(ClassMap::class));
         $classBuilder = $factory->class('ResourceModelClassMap')->extend('ClassMap');
 
         $types = [];
-        foreach ($this->getResult(JsonResource::class) as $className => $resourceClass) {
-            /**
-             * @var ReflectionClass $reflectedClass
-             */
-            $reflectedClass = $resourceClass[ReflectionClass::class];
+        /**
+         * @var ReflectionClass $reflectedClass
+         */
+        foreach ($this->reflectedClasses as $reflectedClass) {
             $types[] = new Expr\ArrayItem(
                 new Expr\ClassConstFetch(
                     new Node\Name('\\' . $reflectedClass->getName() . static::MODEL_SUFFIX), 'class'

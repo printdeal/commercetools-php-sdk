@@ -7,6 +7,8 @@ namespace Commercetools\Generator\Command;
 use Commercetools\Generator\AnnotationRunner;
 use Commercetools\Generator\ClassMapProcessor;
 use Commercetools\Generator\DiscriminatorProcessor;
+use Commercetools\Generator\DiscriminatorValue;
+use Commercetools\Generator\DiscriminatorValueProcessor;
 use Commercetools\Generator\ModelGenerator;
 use Commercetools\Generator\ResourceProcessor;
 use Symfony\Component\Console\Command\Command;
@@ -35,15 +37,24 @@ class GenerateModelsCommand extends Command
     {
         $namespace = 'Commercetools\\Model';
         $path = realpath(__DIR__ . '/../../Model');
-        $outputPath = realpath(__DIR__ . '/../../../generated/Model');
+        $outputDir = __DIR__ . '/../../../generated/Model';
+        $this->ensureDirExists($outputDir);
+        $outputPath = realpath($outputDir);
 
         $processors = [
-            new ClassMapProcessor($namespace, $outputPath),
             new ResourceProcessor($namespace, $path, $outputPath),
             new DiscriminatorProcessor($path, $outputPath),
+            new ClassMapProcessor($namespace, $outputPath),
         ];
         $runner = new AnnotationRunner($path, $processors);
 
         $runner->run();
+    }
+
+    protected function ensureDirExists($dir)
+    {
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777, true);
+        }
     }
 }
