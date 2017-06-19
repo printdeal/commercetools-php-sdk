@@ -14,6 +14,8 @@ abstract class AbstractProcessor implements Processor
         $printer = new MyPrettyPrinter();
         $this->ensureDirExists(dirname($filename));
         file_put_contents($filename, '<?php ' . PHP_EOL . $printer->prettyPrint($stmts));
+
+        return new \SplFileInfo($filename);
     }
 
     protected function ensureDirExists($dir)

@@ -38,7 +38,6 @@ class ResourceProcessor extends AbstractProcessor
         $this->outputPath = $outputPath;
     }
 
-
     public function getAnnotation()
     {
         return JsonResource::class;
@@ -49,7 +48,9 @@ class ResourceProcessor extends AbstractProcessor
      */
     public function process(ReflectionClass $class, $annotation)
     {
-        $this->generateReadModelFromInterface($class);
+        $file = $this->generateReadModelFromInterface($class);
+
+        return [$file];
     }
 
     protected function generateReadModelFromInterface(\ReflectionClass $reflectedClass)
@@ -88,7 +89,7 @@ class ResourceProcessor extends AbstractProcessor
         $traverser->traverse($stmts);
 
         $fileName = $modelPath . '/' . $className . '.php';
-        $this->writeClass($fileName, $stmts);
+        return $this->writeClass($fileName, $stmts);
     }
 
     protected function getParentClass(ReflectionClass $reflectedClass)
@@ -198,7 +199,7 @@ class ResourceProcessor extends AbstractProcessor
                     $params .= ', $this->' . $methodName . '()';
                 }
             }
-            $typeAnnotation = $this->getTypeAnnotation($propertyMethod->getDeclaringClass()->getNamespaceName(), $annotation->type, $uses);
+            $typeAnnotation = $this->getTypeAnnotation($propertyMethod, $annotation->type, $uses);
             if ($typeAnnotation instanceof Discriminator) {
                 if (isset($uses[$annotation->type])) {
                     $useName = $uses[$annotation->type];
@@ -224,15 +225,17 @@ class ResourceProcessor extends AbstractProcessor
         return [$classUses, $method];
     }
 
-    protected function getTypeAnnotation($namespace, $type, $uses)
+    protected function getTypeAnnotation(\ReflectionMethod $method, $type, $uses)
     {
+        $namespace = $method->getDeclaringClass()->getNamespaceName();
         $reader = new AnnotationReader();
         $typeAnnotation = false;
+        $className = $namespace . '\\' . $type;
         if (isset($uses[$type])) {
             $typeClass = new ReflectionClass($uses[$type]['name']);
             $typeAnnotation = $reader->getClassAnnotation($typeClass, Discriminator::class);
-        } elseif (class_exists($namespace . '\\' . $type)) {
-            $typeClass = new ReflectionClass($namespace . '\\' . $type);
+        } elseif (class_exists($className) || interface_exists($className)) {
+            $typeClass = new ReflectionClass($className);
             $typeAnnotation = $reader->getClassAnnotation($typeClass, Discriminator::class);
         }
         return $typeAnnotation;

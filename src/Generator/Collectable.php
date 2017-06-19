@@ -11,13 +11,8 @@ use Doctrine\Common\Annotations\Annotation;
  * @Annotation
  * @Target({"CLASS"})
  */
-class CollectionType
+class Collectable
 {
-    /**
-     * @var string
-     */
-    public $elementType;
-
     /**
      * @var array
      */

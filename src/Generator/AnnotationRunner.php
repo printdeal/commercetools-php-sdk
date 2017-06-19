@@ -15,7 +15,7 @@ class AnnotationRunner
     /**
      * @var string
      */
-    private $path;
+    private $pathes;
 
     /**
      * @var Processor[]
@@ -30,15 +30,21 @@ class AnnotationRunner
      * @param array $annotationClasses
      * @param Processor[] $processors
      */
-    public function __construct($path, array $processors = [], array $annotationClasses = [])
+    public function __construct($pathes, array $processors = [], array $annotationClasses = [])
     {
-        $this->path = $path;
+        if (!is_array($pathes)) {
+            $pathes = [$pathes];
+        }
+        $this->pathes = $pathes;
+
         $annotationClasses = [
             JsonResource::class,
             JsonField::class,
             Discriminator::class,
             DiscriminatorValue::class,
+            Collectable::class,
             CollectionType::class,
+            Referenceable::class
         ];
         $this->annotations = $annotationClasses;
         foreach ($this->annotations as $annotationClass) {
@@ -52,8 +58,12 @@ class AnnotationRunner
 
     public function run()
     {
-        $path = realpath($this->path);
-
+        foreach ($this->pathes as $path) {
+            $this->runPath(realpath($path));
+        }
+    }
+    public function runPath($path)
+    {
         $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP5);
 
         $allFiles = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
@@ -66,17 +76,23 @@ class AnnotationRunner
         do {
             $file = array_shift($files);
             foreach ($this->processors as $processor) {
-                $annotationVisitor = new AnnotationVisitor($processor->getAnnotation());
-                $traverser = new NodeTraverser();
-                $traverser->addVisitor(new NameResolver()); // we will need resolved names
-                $traverser->addVisitor($annotationVisitor);
-                $code = file_get_contents($file);
-                $stmts = $parser->parse($code);
+                $annotations = $processor->getAnnotation();
+                if (!is_array($annotations)) {
+                    $annotations = [$annotations];
+                }
+                foreach ($annotations as $annotation) {
+                    $annotationVisitor = new AnnotationVisitor($annotation);
+                    $traverser = new NodeTraverser();
+                    $traverser->addVisitor(new NameResolver()); // we will need resolved names
+                    $traverser->addVisitor($annotationVisitor);
+                    $code = file_get_contents($file);
+                    $stmts = $parser->parse($code);
 
-                $traverser->traverse($stmts);
-                $annotation = $processor->getAnnotation();
-                if ($annotationVisitor->getAnnotatedClass() instanceof $annotation) {
-                    $processor->process($annotationVisitor->getReflectedClass(), $annotationVisitor->getAnnotatedClass());
+                    $traverser->traverse($stmts);
+                    if ($annotationVisitor->getAnnotatedClass() instanceof $annotation) {
+                        $createdFiles = $processor->process($annotationVisitor->getReflectedClass(), $annotationVisitor->getAnnotatedClass());
+                        $files = array_merge($files, $createdFiles);
+                    }
                 }
             }
         } while (count($files) > 0);

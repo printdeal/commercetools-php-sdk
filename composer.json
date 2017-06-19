@@ -16,7 +16,7 @@
       "Commercetools\\Commons\\": "src/Commons/",
       "Commercetools\\Model\\": [
         "src/Model/",
-        "generated/Model/"
+        "target/Model/"
       ]
     }
   },

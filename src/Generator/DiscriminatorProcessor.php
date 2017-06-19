@@ -84,6 +84,8 @@ class DiscriminatorProcessor extends AbstractProcessor
 
         $fileName = $modelPath . '/' . $className . '.php';
         $this->writeClass($fileName, $stmts);
+
+        return [];
     }
 
     public function getDiscriminatorResolverMethod(\ReflectionClass $reflectionClass)

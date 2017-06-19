@@ -11,15 +11,10 @@ use Doctrine\Common\Annotations\Annotation;
  * @Annotation
  * @Target({"CLASS"})
  */
-class CollectionType
+class Referenceable
 {
     /**
      * @var string
      */
-    public $elementType;
-
-    /**
-     * @var array
-     */
-    public $indexes;
+    public $typeId;
 }

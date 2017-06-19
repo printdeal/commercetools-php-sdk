@@ -53,7 +53,7 @@ class ModelGenerator
             JsonField::class,
             Discriminator::class,
             DiscriminatorValue::class,
-            CollectionType::class,
+            Collectable::class,
 //            JsonFieldSetter::class,
 //            CollectionType::class,
 //            Draftable::class,

@@ -4,24 +4,28 @@
  */
 
 
-namespace Commercetools\Model\Customer;
+namespace Commercetools\Model\Type;
 
-
+use Commercetools\Model\LocalizedString;
 use Commercetools\Generator\JsonField;
 use Commercetools\Generator\JsonResource;
 use Commercetools\Generator\Collectable;
-use Commercetools\Model\LocalizedString;
-use Commercetools\Model\Resource;
 
 /**
  * @JsonResource()
- * @Collectable(indexes={"id"})
+ * @Collectable(indexes={"key"})
  */
-interface Customer extends Resource
+interface EnumValue
 {
+    /**
+     * @JsonField(type="string")
+     * @return string
+     */
+    public function getKey();
+
     /**
      * @JsonField(type="LocalizedString")
      * @return LocalizedString
      */
-    public function getName();
+    public function getLable();
 }

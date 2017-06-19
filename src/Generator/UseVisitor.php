@@ -5,17 +5,24 @@
 namespace Commercetools\Generator;
 
 use Commercetools\Core\Model\Common\JsonObject;
-use Commercetools\Generator\JsonField;
-use PhpParser\Comment;
+use Doctrine\Common\Annotations\AnnotationReader;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Interface_;
+use PhpParser\Node\Stmt\Class_;
+use PhpParser\NodeVisitorAbstract;
 use ReflectionClass;
-use ReflectionProperty;
 
-class UseVisitor extends GeneratorVisitor
+class UseVisitor extends NodeVisitorAbstract
 {
     protected $propertyTypes = [];
     protected $uses = [];
+    private $reader;
+
+    public function __construct()
+    {
+        $this->reader = new AnnotationReader();
+    }
+
     public function enterNode(Node $node)
     {
         if ($node instanceof Node\Stmt\Use_) {
@@ -31,11 +38,11 @@ class UseVisitor extends GeneratorVisitor
     /**
      * @param Node $node
      *
-     * @return null|Node\Stmt\Class_
+     * @return null|Node\Stmt\Class_|Interface_
      */
     public function leaveNode(Node $node)
     {
-        if (!$node instanceof Interface_) {
+        if (!$node instanceof Interface_ || $node instanceof Class_) {
             return null;
         }
         if ($node->namespacedName == JsonObject::class) {
@@ -60,21 +67,5 @@ class UseVisitor extends GeneratorVisitor
     public function getPropertyTypes()
     {
         return $this->propertyTypes;
-    }
-    /**
-     * Retrieve instance public/protected properties
-     *
-     * @param ReflectionClass $reflectedClass
-     *
-     * @return ReflectionProperty[]
-     */
-    private function getProtectedProperties(ReflectionClass $reflectedClass)
-    {
-        return array_filter(
-            $reflectedClass->getProperties(),
-            function (ReflectionProperty $property) {
-                return !$property->isStatic();
-            }
-        );
     }
 }

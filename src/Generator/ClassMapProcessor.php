@@ -27,7 +27,7 @@ class ClassMapProcessor extends AbstractProcessor
 
     public function getAnnotation()
     {
-        return JsonResource::class;
+        return [JsonResource::class, CollectionType::class];
     }
 
     public function process(ReflectionClass $class, $annotation)
@@ -69,5 +69,7 @@ class ClassMapProcessor extends AbstractProcessor
         $traverser->traverse($stmts);
 
         $this->writeClass($fileName, $stmts);
+
+        return [];
     }
 }

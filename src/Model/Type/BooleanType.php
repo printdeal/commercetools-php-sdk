@@ -4,17 +4,16 @@
  */
 
 
-namespace Commercetools\Model\Customer;
+namespace Commercetools\Model\Type;
 
 use Commercetools\Generator\JsonResource;
 use Commercetools\Generator\DiscriminatorValue;
-use Commercetools\Model\Reference;
 
 /**
  * @JsonResource()
- * @DiscriminatorValue(value="customer")
+ * @DiscriminatorValue(value="Boolean")
  */
-interface CustomerReference extends Reference
+interface BooleanType extends FieldType
 {
 
 }

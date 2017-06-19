@@ -30,7 +30,12 @@ class AnnotationVisitor extends NodeVisitorAbstract
             return null;
         }
         $annotationClass = $this->annotation;
-        $reflectedClass = new \ReflectionClass((string)$node->namespacedName);
+        try {
+            $reflectedClass = new \ReflectionClass((string)$node->namespacedName);
+        } catch (\Exception $e) {
+            var_dump($annotationClass);
+            var_dump($node);
+        }
         $annotation = $this->reader->getClassAnnotation($reflectedClass, $annotationClass);
         if ($annotation instanceof $annotationClass) {
             $this->reflectedClass = $reflectedClass;

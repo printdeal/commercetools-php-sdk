@@ -6,10 +6,12 @@ namespace Commercetools\Generator\Command;
 
 use Commercetools\Generator\AnnotationRunner;
 use Commercetools\Generator\ClassMapProcessor;
+use Commercetools\Generator\CollectableProcessor;
 use Commercetools\Generator\DiscriminatorProcessor;
 use Commercetools\Generator\DiscriminatorValue;
 use Commercetools\Generator\DiscriminatorValueProcessor;
 use Commercetools\Generator\ModelGenerator;
+use Commercetools\Generator\ReferenceableProcessor;
 use Commercetools\Generator\ResourceProcessor;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -37,17 +39,25 @@ class GenerateModelsCommand extends Command
     {
         $namespace = 'Commercetools\\Model';
         $path = realpath(__DIR__ . '/../../Model');
-        $outputDir = __DIR__ . '/../../../generated/Model';
+        $outputDir = __DIR__ . '/../../../target/Model';
+        array_map('unlink', glob($outputDir . '/*.php'));
+        array_map('unlink', glob($outputDir . '/**/*.php'));
         $this->ensureDirExists($outputDir);
         $outputPath = realpath($outputDir);
+
+        $processors = [
+            new ReferenceableProcessor($path, $outputPath),
+            new CollectableProcessor($path, $outputPath),
+        ];
+        $runner = new AnnotationRunner($path, $processors);
+        $runner->run();
 
         $processors = [
             new ResourceProcessor($namespace, $path, $outputPath),
             new DiscriminatorProcessor($path, $outputPath),
             new ClassMapProcessor($namespace, $outputPath),
         ];
-        $runner = new AnnotationRunner($path, $processors);
-
+        $runner = new AnnotationRunner([$path, $outputPath], $processors);
         $runner->run();
     }
 

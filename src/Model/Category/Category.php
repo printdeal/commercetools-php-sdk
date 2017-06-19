@@ -4,17 +4,19 @@ namespace Commercetools\Model\Category;
 
 use Commercetools\Core\Model\Category\CategoryReferenceCollection;
 use Commercetools\Core\Model\Common\AssetCollection;
-use Commercetools\Core\Model\Common\LocalizedString;
+use Commercetools\Model\LocalizedString;
 use Commercetools\Core\Model\CustomField\CustomFieldObject;
 use Commercetools\Model\Reference;
 use Commercetools\Model\Resource;
 use Commercetools\Generator\JsonField;
-use Commercetools\Generator\CollectionType;
+use Commercetools\Generator\Collectable;
 use Commercetools\Generator\JsonResource;
+use Commercetools\Generator\Referenceable;
 
 /**
  * @JsonResource()
- * @CollectionType(indexes={"id"})
+ * @Collectable(indexes={"id"})
+ * @Referenceable(typeId="category")
  */
 interface Category extends Resource
 {
