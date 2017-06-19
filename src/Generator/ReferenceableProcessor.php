@@ -52,6 +52,7 @@ class ReferenceableProcessor extends AbstractProcessor
         $classBuilder->setDocComment(
             '/**
               * @JsonResource()
+              * @Collectable()
               * @DiscriminatorValue(value="' . $annotation->typeId . '")
               */');
         $classBuilder->addStmt($factory->method('getObj')->makePublic()->setDocComment(
@@ -61,6 +62,7 @@ class ReferenceableProcessor extends AbstractProcessor
               */'
         ));
         $builder->addStmt($factory->use(JsonField::class));
+        $builder->addStmt($factory->use(Collectable::class));
         $builder->addStmt($factory->use(JsonResource::class));
         $builder->addStmt($factory->use(DiscriminatorValue::class));
         $builder->addStmt($factory->use(Reference::class));

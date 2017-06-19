@@ -21,5 +21,5 @@ class CollectionType
     /**
      * @var array
      */
-    public $indexes;
+    public $indexes = [];
 }

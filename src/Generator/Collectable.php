@@ -16,5 +16,5 @@ class Collectable
     /**
      * @var array
      */
-    public $indexes;
+    public $indexes = [];
 }
