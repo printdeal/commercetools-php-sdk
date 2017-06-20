@@ -8,10 +8,12 @@ namespace Commercetools\Model\Type;
 
 use Commercetools\Generator\JsonResource;
 use Commercetools\Generator\JsonField;
+use Commercetools\Generator\Collectable;
 use Commercetools\Model\LocalizedString;
 
 /**
  * @JsonResource()
+ * @Collectable(indexes={"name"})
  */
 interface FieldDefinition
 {

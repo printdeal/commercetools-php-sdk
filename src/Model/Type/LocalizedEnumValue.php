@@ -6,6 +6,7 @@
 
 namespace Commercetools\Model\Type;
 
+use Commercetools\Model\LocalizedString;
 use Commercetools\Generator\JsonField;
 use Commercetools\Generator\JsonResource;
 use Commercetools\Generator\Collectable;
@@ -14,7 +15,7 @@ use Commercetools\Generator\Collectable;
  * @JsonResource()
  * @Collectable(indexes={"key"})
  */
-interface EnumValue
+interface LocalizedEnumValue
 {
     /**
      * @JsonField(type="string")
@@ -23,8 +24,8 @@ interface EnumValue
     public function getKey();
 
     /**
-     * @JsonField(type="string")
-     * @return string
+     * @JsonField(type="LocalizedString")
+     * @return LocalizedString
      */
     public function getLabel();
 }

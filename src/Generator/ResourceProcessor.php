@@ -21,7 +21,6 @@ use ReflectionClass;
 
 class ResourceProcessor extends AbstractProcessor
 {
-    private $namespace;
     private $path;
     private $outputPath;
 
@@ -31,9 +30,8 @@ class ResourceProcessor extends AbstractProcessor
      * @param $path
      * @param $outputPath
      */
-    public function __construct($namespace, $path, $outputPath)
+    public function __construct($path, $outputPath)
     {
-        $this->namespace = $namespace;
         $this->path = $path;
         $this->outputPath = $outputPath;
     }
@@ -85,7 +83,7 @@ class ResourceProcessor extends AbstractProcessor
 
         $traverser = new NodeTraverser();
         $traverser->addVisitor(new NameResolver()); // we will need resolved names
-        $traverser->addVisitor(new NamespaceChangeVisitor($this->namespace, $this->namespace)); // we will shorten the resolved names
+        $traverser->addVisitor(new NamespaceChangeVisitor($reflectedClass->getNamespaceName(), $reflectedClass->getNamespaceName())); // we will shorten the resolved names
         $traverser->traverse($stmts);
 
         $fileName = $modelPath . '/' . $className . '.php';

@@ -7,6 +7,8 @@ namespace Commercetools\Generator\Command;
 use Commercetools\Generator\AnnotationRunner;
 use Commercetools\Generator\ClassMapProcessor;
 use Commercetools\Generator\CollectableProcessor;
+use Commercetools\Generator\CollectionType;
+use Commercetools\Generator\CollectionTypeProcessor;
 use Commercetools\Generator\DiscriminatorProcessor;
 use Commercetools\Generator\DiscriminatorValue;
 use Commercetools\Generator\DiscriminatorValueProcessor;
@@ -53,7 +55,8 @@ class GenerateModelsCommand extends Command
         $runner->run();
 
         $processors = [
-            new ResourceProcessor($namespace, $path, $outputPath),
+            new ResourceProcessor($path, $outputPath),
+            new CollectionTypeProcessor($path, $outputPath),
             new DiscriminatorProcessor($path, $outputPath),
             new ClassMapProcessor($namespace, $outputPath),
         ];

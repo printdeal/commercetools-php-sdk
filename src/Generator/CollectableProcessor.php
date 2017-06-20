@@ -49,7 +49,7 @@ class CollectableProcessor extends AbstractProcessor
         $collection = new ReflectionClass(Collection::class);
         $className = $class->getShortName() . $collection->getShortName();
 
-        $classBuilder = $factory->interface($className)->extend('Collection');
+        $classBuilder = $factory->interface($className)->extend($collection->getShortName());
         if (count($annotation->indexes) > 0) {
             $classBuilder->setDocComment(
                 '/**
@@ -60,6 +60,16 @@ class CollectableProcessor extends AbstractProcessor
                 '/**
               * @CollectionType(elementType="' . $class->getShortName() . '")
               */');
+        }
+        foreach ($annotation->indexes as $index) {
+            $methodBuilder = $factory->method('by' . ucfirst($index))
+                ->makePublic()
+                ->setDocComment('/**
+                              * @param $' . $index . '
+                              * @return ' . $class->getShortName() . '
+                              */')
+                ->addParam($factory->param($index));
+            $classBuilder->addStmt($methodBuilder);
         }
         $methodBuilder = $factory->method('at')
             ->makePublic()

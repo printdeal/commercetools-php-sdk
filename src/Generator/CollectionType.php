@@ -16,6 +16,10 @@ class CollectionType
     /**
      * @var string
      */
+    public $type;
+    /**
+     * @var string
+     */
     public $elementType;
 
     /**
