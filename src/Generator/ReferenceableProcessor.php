@@ -80,7 +80,9 @@ class ReferenceableProcessor extends AbstractProcessor
 
         $traverser = new NodeTraverser();
         $traverser->addVisitor(new NameResolver()); // we will need resolved names
-        $traverser->addVisitor(new NamespaceChangeVisitor($class->getNamespaceName(), $class->getNamespaceName())); // we will shorten the resolved names
+        $traverser->addVisitor(
+            new NamespaceChangeVisitor($class->getNamespaceName(), $class->getNamespaceName())
+        ); // we will shorten the resolved names
         $traverser->traverse($stmts);
 
         $fileName = $modelPath . '/' . $className . '.php';

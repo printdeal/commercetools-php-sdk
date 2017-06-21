@@ -57,7 +57,9 @@ class NamespaceChangeVisitor extends NodeVisitorAbstract
                 !isset($this->uses[$name]) &&
                 strpos($name, $this->namespace->toString()) === 0
             ) {
-                $node = new Node\Name(trim(str_replace($this->namespace->toString(), '', $node->toString()), '\\'));
+                $node = new Node\Name(
+                    trim(str_replace($this->namespace->toString(), '', $node->toString()), '\\')
+                );
                 return $node;
             }
             return $node;

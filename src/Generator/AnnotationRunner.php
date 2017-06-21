@@ -26,7 +26,7 @@ class AnnotationRunner
 
     /**
      * AnnotationRunner constructor.
-     * @param $path
+     * @param $pathes
      * @param array $annotationClasses
      * @param Processor[] $processors
      */

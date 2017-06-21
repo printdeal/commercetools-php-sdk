@@ -83,7 +83,9 @@ class ResourceProcessor extends AbstractProcessor
 
         $traverser = new NodeTraverser();
         $traverser->addVisitor(new NameResolver()); // we will need resolved names
-        $traverser->addVisitor(new NamespaceChangeVisitor($reflectedClass->getNamespaceName(), $reflectedClass->getNamespaceName())); // we will shorten the resolved names
+        $traverser->addVisitor(
+            new NamespaceChangeVisitor($reflectedClass->getNamespaceName(), $reflectedClass->getNamespaceName())
+        ); // we will shorten the resolved names
         $traverser->traverse($stmts);
 
         $fileName = $modelPath . '/' . $className . '.php';
