@@ -35,7 +35,6 @@ class ClassMapProcessor extends AbstractProcessor
         $this->reflectedClasses[$class->getName()] = $class;
         $factory = new BuilderFactory();
         $builder = $factory->namespace($this->namespace);
-        $builder->addStmt($factory->use(ClassMap::class));
         $classBuilder = $factory->class('ResourceModelClassMap')->extend('ClassMap');
 
         $types = [];

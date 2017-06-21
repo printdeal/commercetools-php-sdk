@@ -49,11 +49,15 @@ class ReferenceableProcessor extends AbstractProcessor
         $reference = new ReflectionClass(Reference::class);
         $className = $class->getShortName() . $reference->getShortName();
         $classBuilder = $factory->interface($className)->extend($reference->getShortName());
+        $typeId = $annotation->typeId;
+        if (empty($typeId)) {
+            $typeId = $this->camel2dashed($class->getShortName());
+        }
         $classBuilder->setDocComment(
             '/**
               * @JsonResource()
               * @Collectable()
-              * @DiscriminatorValue(value="' . $annotation->typeId . '")
+              * @DiscriminatorValue(value="' . $typeId . '")
               */');
         $classBuilder->addStmt($factory->method('getObj')->makePublic()->setDocComment(
             '/**
@@ -78,5 +82,9 @@ class ReferenceableProcessor extends AbstractProcessor
 
         $fileName = $modelPath . '/' . $className . '.php';
         return [$this->writeClass($fileName, $stmts)];
+    }
+
+    private function camel2dashed($string) {
+        return strtolower(preg_replace('/([a-zA-Z])(?=[A-Z])/', '$1-', $string));
     }
 }

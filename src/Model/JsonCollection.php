@@ -57,10 +57,10 @@ class JsonCollection implements \IteratorAggregate
 
     public function at($index)
     {
-        return $this->map($this->raw($index));
+        return $this->map($this->raw($index), $index);
     }
 
-    protected function map($data)
+    protected function map($data, $index)
     {
         return $data;
     }

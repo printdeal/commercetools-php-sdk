@@ -4,7 +4,7 @@
  */
 
 
-namespace Commercetools\Model\Customer;
+namespace Commercetools\Model\TaxCategory;
 
 
 use Commercetools\Generator\JsonField;
@@ -19,7 +19,7 @@ use Commercetools\Model\Resource;
  * @Collectable(indexes={"id"})
  * @Referenceable()
  */
-interface Customer extends Resource
+interface TaxCategory extends Resource
 {
     /**
      * @JsonField(type="LocalizedString")

@@ -181,14 +181,16 @@ class ResourceProcessor extends AbstractProcessor
             ->makePublic()
             ->getNode();
         $uses = $this->getUses($propertyMethod->getDeclaringClass());
-        $body = 'if (is_null($this->'. $propertyName . ') &&
-    !is_null($value = $this->raw(\'' . $propertyName . '\'))) {';
+        $body = 'if (is_null($this->'. $propertyName . ')) {
+    $value = $this->raw(\'' . $propertyName . '\');';
         if (is_null($annotation->type)) {
-            $body .= '    $this->' .$propertyName .
-                ' = $value;' . PHP_EOL;
+            $body .= '    if (!is_null($value)) {
+        $this->' .$propertyName . ' = $value;
+    }' . PHP_EOL;
         } elseif (in_array($annotation->type, ['int', 'bool', 'string', 'float', 'array'])) {
-            $body .= '    $this->' . $propertyName .
-                ' = (' . $annotation->type . ')$value;' . PHP_EOL;
+            $body .= '        if (!is_null($value)) {
+        $this->' . $propertyName . ' = (' . $annotation->type . ')$value;
+    }' . PHP_EOL;
         } else {
             $params = '$value';
             if ($annotation->params) {
@@ -216,6 +218,7 @@ class ResourceProcessor extends AbstractProcessor
                     $classUses[$annotation->type] = $factory->use($propertyMethod->getDeclaringClass()->getNamespaceName() . '\\' . $annotation->type);
                 }
             }
+            $body .= '    if (is_null($value)) { return new $mappedClass([]); }' . PHP_EOL;
             $body .= '    $this->' . $propertyName . ' = new $mappedClass(' . $params . ');' . PHP_EOL;
         }
         $body .= '}' . PHP_EOL . 'return $this->' . $propertyName . ';' . PHP_EOL;

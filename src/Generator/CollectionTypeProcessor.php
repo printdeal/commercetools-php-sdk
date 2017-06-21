@@ -52,23 +52,13 @@ class CollectionTypeProcessor extends AbstractProcessor
         $classUses[$parentClassShortName] = $factory->use($parentClass);
         $classBuilder = $classBuilder->extend($parentClassShortName);
 
-        $atMethod = $factory->method('map')
-            ->addParam($factory->param('data'))
-            ->makeProtected()
-            ->getNode();
-        $body = 'return $data;';
-        $atMethod->stmts = (new ParserFactory())->create(ParserFactory::PREFER_PHP5)->parse('<?php ' . $body);
-
-        $classBuilder->addStmt($atMethod);
+        $classBuilder->addStmt($this->getCollectionMap($class, $annotation));
+        if (count($annotation->indexes) > 0) {
+            $classBuilder->addStmt($this->getCollectionIndexer($annotation));
+        }
 
         foreach ($annotation->indexes as $index) {
-            $byMethod = $factory->method('by' . ucfirst($index))
-                ->addParam($factory->param($index))
-                ->makePublic()
-                ->getNode();
-            $body = 'return $this->valueByKey(\'' . $index . '\', $' . $index . ');';
-            $byMethod->stmts = (new ParserFactory())->create(ParserFactory::PREFER_PHP5)->parse('<?php ' . $body);
-            $classBuilder->addStmt($byMethod);
+            $classBuilder->addStmt($this->getCollectionIndexGetter($annotation, $index));
         }
 
         $builder->addStmts(array_values($classUses));
@@ -83,6 +73,94 @@ class CollectionTypeProcessor extends AbstractProcessor
 
         $fileName = $modelPath . '/' . $className . '.php';
         return [$this->writeClass($fileName, $stmts)];
+    }
+
+    private function getCollectionIndexGetter(CollectionType $annotation, $index)
+    {
+        $factory = new BuilderFactory();
+        $method = $factory->method('by' . ucfirst($index))
+            ->addParam($factory->param($index))
+            ->makePublic()
+            ->getNode();
+        $body = 'return $this->valueByKey(\'' . $index . '\', $' . $index . ');';
+        $method->stmts = (new ParserFactory())->create(ParserFactory::PREFER_PHP5)->parse('<?php ' . $body);
+        return $method;
+    }
+
+    private function getCollectionIndexer(CollectionType $annotation)
+    {
+        $factory = new BuilderFactory();
+        $method = $factory->method('index')
+            ->makeProtected()
+            ->addParam($factory->param('data'))
+            ->getNode();
+        $body = '    foreach ($data as $key => $value) {' . PHP_EOL;
+        foreach ($annotation->indexes as $index) {
+            $body.= '        if (isset($value[\'' . $index . '\'])) {' . PHP_EOL;
+            $body.= '            $this->addToIndex(\'' . $index . '\', $value[\'' . $index . '\'], $key);' . PHP_EOL;
+            $body.= '        }' . PHP_EOL;
+        }
+        $body.= '    }' . PHP_EOL;
+        $method->stmts = (new ParserFactory())->create(ParserFactory::PREFER_PHP5)->parse('<?php ' . $body);
+        return $method;
+    }
+
+    private function getCollectionMap(ReflectionClass $class, CollectionType $annotation)
+    {
+        $factory = new BuilderFactory();
+        $method = $factory->method('map')
+            ->addParam($factory->param('data'))
+            ->addParam($factory->param('index'))
+            ->makeProtected()
+            ->getNode();
+        $uses = $this->getUses($class);
+
+        $body = '';
+        if (is_null($annotation->elementType)) {
+            $body .= 'return $data;' . PHP_EOL;
+        } elseif (in_array($annotation->elementType, ['int', 'bool', 'string', 'float', 'array'])) {
+            $body .= 'return (' . $annotation->elementType . ')$data;' . PHP_EOL;
+        } else {
+            $params = '$data';
+            $typeAnnotation = $this->getTypeAnnotation($class, $annotation->elementType, $uses);
+            if ($typeAnnotation instanceof Discriminator) {
+                if (isset($uses[$annotation->elementType])) {
+                    $useName = $uses[$annotation->elementType];
+                    $classUses[$annotation->elementType . 'DiscriminatorResolver'] = $factory->use($useName['name'] . 'DiscriminatorResolver');
+                } else {
+                    $classUses[$annotation->elementType . 'DiscriminatorResolver'] = $factory->use($class->getNamespaceName() . '\\' . $annotation->elementType . 'DiscriminatorResolver');
+                }
+                $body .= '    $type = ' . $annotation->elementType . 'DiscriminatorResolver::discriminatorType($value, \'' . $typeAnnotation->name . '\');';
+                $body .= '    $mappedClass = ResourceClassMap::getMappedClass($type);';
+            } else {
+                $body .= '    $mappedClass = ResourceClassMap::getMappedClass('.$annotation->elementType.'::class);';
+                if (isset($uses[$annotation->elementType])) {
+                    $useName = $uses[$annotation->elementType];
+                    $classUses[$annotation->elementType] = $factory->use($useName['name']);
+                } else {
+                    $classUses[$annotation->elementType] = $factory->use($class->getNamespaceName() . '\\' . $annotation->elementType);
+                }
+            }
+            $body .= 'return new $mappedClass(' . $params . ');' . PHP_EOL;
+        }
+        $method->stmts = (new ParserFactory())->create(ParserFactory::PREFER_PHP5)->parse('<?php ' . $body);
+        return $method;
+    }
+
+    protected function getTypeAnnotation(ReflectionClass $class, $type, $uses)
+    {
+        $namespace = $class->getNamespaceName();
+        $reader = new AnnotationReader();
+        $typeAnnotation = false;
+        $className = $namespace . '\\' . $type;
+        if (isset($uses[$type])) {
+            $typeClass = new ReflectionClass($uses[$type]['name']);
+            $typeAnnotation = $reader->getClassAnnotation($typeClass, Discriminator::class);
+        } elseif (class_exists($className) || interface_exists($className)) {
+            $typeClass = new ReflectionClass($className);
+            $typeAnnotation = $reader->getClassAnnotation($typeClass, Discriminator::class);
+        }
+        return $typeAnnotation;
     }
 
     public function getAnnotation()

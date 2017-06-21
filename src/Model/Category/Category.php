@@ -16,7 +16,7 @@ use Commercetools\Generator\Referenceable;
 /**
  * @JsonResource()
  * @Collectable(indexes={"id"})
- * @Referenceable(typeId="category")
+ * @Referenceable()
  */
 interface Category extends Resource
 {
@@ -44,8 +44,8 @@ interface Category extends Resource
     public function getAncestors();
 
     /**
-     * @JsonField(type="Reference")
-     * @return Reference
+     * @JsonField(type="CategoryReference")
+     * @return CategoryReference
      */
     public function getParent();
 
