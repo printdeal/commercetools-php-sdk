@@ -10,7 +10,7 @@ class JsonCollection implements \IteratorAggregate
     private $rawData;
     private $indexes = [];
 
-    public function __construct(array $data =[])
+    public function __construct(array $data = [])
     {
         $this->keys = array_keys($data);
         $this->index($data);

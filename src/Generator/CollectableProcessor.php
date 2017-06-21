@@ -51,15 +51,18 @@ class CollectableProcessor extends AbstractProcessor
 
         $classBuilder = $factory->interface($className)->extend($collection->getShortName());
         if (count($annotation->indexes) > 0) {
-            $classBuilder->setDocComment(
-                '/**
-              * @CollectionType(elementType="' . $class->getShortName() . '", indexes={"' . implode('""', $annotation->indexes) . '"})
-              */');
+            $comment =
+                '/**' . PHP_EOL .
+                '  * @CollectionType(elementType="' . $class->getShortName() . '",' .
+                'indexes={"' . implode('""', $annotation->indexes) . '"})' . PHP_EOL .
+                '  */';
+            $classBuilder->setDocComment($comment);
         } else {
             $classBuilder->setDocComment(
                 '/**
-              * @CollectionType(elementType="' . $class->getShortName() . '")
-              */');
+                  * @CollectionType(elementType="' . $class->getShortName() . '")
+                  */'
+            );
         }
         foreach ($annotation->indexes as $index) {
             $methodBuilder = $factory->method('by' . ucfirst($index))

@@ -90,7 +90,10 @@ class AnnotationRunner
 
                     $traverser->traverse($stmts);
                     if ($annotationVisitor->getAnnotatedClass() instanceof $annotation) {
-                        $createdFiles = $processor->process($annotationVisitor->getReflectedClass(), $annotationVisitor->getAnnotatedClass());
+                        $createdFiles = $processor->process(
+                            $annotationVisitor->getReflectedClass(),
+                            $annotationVisitor->getAnnotatedClass()
+                        );
                         $files = array_merge($files, $createdFiles);
                     }
                 }

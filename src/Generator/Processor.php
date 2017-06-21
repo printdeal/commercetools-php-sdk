@@ -6,7 +6,6 @@
 
 namespace Commercetools\Generator;
 
-
 interface Processor
 {
     public function process(\ReflectionClass $class, $annotation);

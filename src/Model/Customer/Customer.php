@@ -6,7 +6,6 @@
 
 namespace Commercetools\Model\Customer;
 
-
 use Commercetools\Generator\JsonField;
 use Commercetools\Generator\JsonResource;
 use Commercetools\Generator\Collectable;

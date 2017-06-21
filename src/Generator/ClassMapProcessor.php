@@ -44,10 +44,12 @@ class ClassMapProcessor extends AbstractProcessor
         foreach ($this->reflectedClasses as $reflectedClass) {
             $types[] = new Expr\ArrayItem(
                 new Expr\ClassConstFetch(
-                    new Node\Name('\\' . $reflectedClass->getName() . static::MODEL_SUFFIX), 'class'
+                    new Node\Name('\\' . $reflectedClass->getName() . static::MODEL_SUFFIX),
+                    'class'
                 ),
                 new Expr\ClassConstFetch(
-                    new Node\Name('\\' . $reflectedClass->getName()), 'class'
+                    new Node\Name('\\' . $reflectedClass->getName()),
+                    'class'
                 )
             );
         }
@@ -64,7 +66,9 @@ class ClassMapProcessor extends AbstractProcessor
 
         $traverser = new NodeTraverser();
         $traverser->addVisitor(new NameResolver()); // we will need resolved names
-        $traverser->addVisitor(new NamespaceChangeVisitor($this->namespace, $this->namespace)); // we will shorten the resolved names
+        $traverser->addVisitor(
+            new NamespaceChangeVisitor($this->namespace, $this->namespace)  // we will shorten the resolved names
+        );
         $traverser->traverse($stmts);
 
         $this->writeClass($fileName, $stmts);

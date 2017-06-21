@@ -6,7 +6,6 @@
 
 namespace Commercetools\Model\TaxCategory;
 
-
 use Commercetools\Generator\JsonField;
 use Commercetools\Generator\JsonResource;
 use Commercetools\Generator\Collectable;

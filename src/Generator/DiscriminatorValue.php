@@ -10,7 +10,6 @@ namespace Commercetools\Generator;
  * @Target({"CLASS"})
  */
 class DiscriminatorValue
-
 {
     public $value;
 }

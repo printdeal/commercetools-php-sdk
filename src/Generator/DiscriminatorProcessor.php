@@ -62,7 +62,8 @@ class DiscriminatorProcessor extends AbstractProcessor
             $reflectedValueClass = $discriminatorValue[ReflectionClass::class];
             $types[] = new Expr\ArrayItem(
                 new Expr\ClassConstFetch(
-                    new Node\Name($reflectedValueClass->getShortName()), 'class'
+                    new Node\Name($reflectedValueClass->getShortName()),
+                    'class'
                 ),
                 new Scalar\String_($discriminatorValue[DiscriminatorValue::class]->value)
             );
@@ -101,9 +102,10 @@ class DiscriminatorProcessor extends AbstractProcessor
                 $factory->param('discriminatorName')
             )
             ->getNode();
+        $modelName = $reflectionClass->getShortName() . static::MODEL_SUFFIX;
         $body = '$types = static::TYPES;
     $discriminator = isset($data[$discriminatorName]) ? $data[$discriminatorName] : \'\';
-    return isset($types[$discriminator]) ? $types[$discriminator] : ' . $reflectionClass->getShortName() . static::MODEL_SUFFIX . '::class;';
+    return isset($types[$discriminator]) ? $types[$discriminator] : ' . $modelName . '::class;';
         $method->stmts = (new ParserFactory())->create(ParserFactory::PREFER_PHP5)->parse('<?php ' . $body);
         return $method;
     }

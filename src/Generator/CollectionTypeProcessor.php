@@ -68,7 +68,9 @@ class CollectionTypeProcessor extends AbstractProcessor
 
         $traverser = new NodeTraverser();
         $traverser->addVisitor(new NameResolver()); // we will need resolved names
-        $traverser->addVisitor(new NamespaceChangeVisitor($class->getNamespaceName(), $class->getNamespaceName())); // we will shorten the resolved names
+        $traverser->addVisitor(
+            new NamespaceChangeVisitor($class->getNamespaceName(), $class->getNamespaceName())
+        ); // we will shorten the resolved names
         $traverser->traverse($stmts);
 
         $fileName = $modelPath . '/' . $className . '.php';
@@ -126,11 +128,16 @@ class CollectionTypeProcessor extends AbstractProcessor
             if ($typeAnnotation instanceof Discriminator) {
                 if (isset($uses[$annotation->elementType])) {
                     $useName = $uses[$annotation->elementType];
-                    $classUses[$annotation->elementType . 'DiscriminatorResolver'] = $factory->use($useName['name'] . 'DiscriminatorResolver');
+                    $classUses[$annotation->elementType . 'DiscriminatorResolver'] = $factory->use(
+                        $useName['name'] . 'DiscriminatorResolver'
+                    );
                 } else {
-                    $classUses[$annotation->elementType . 'DiscriminatorResolver'] = $factory->use($class->getNamespaceName() . '\\' . $annotation->elementType . 'DiscriminatorResolver');
+                    $classUses[$annotation->elementType . 'DiscriminatorResolver'] = $factory->use(
+                        $class->getNamespaceName() . '\\' . $annotation->elementType . 'DiscriminatorResolver'
+                    );
                 }
-                $body .= '    $type = ' . $annotation->elementType . 'DiscriminatorResolver::discriminatorType($value, \'' . $typeAnnotation->name . '\');';
+                $body .= '    $type = ' . $annotation->elementType . 'DiscriminatorResolver::discriminatorType' .
+                    '($value, \'' . $typeAnnotation->name . '\');';
                 $body .= '    $mappedClass = ResourceClassMap::getMappedClass($type);';
             } else {
                 $body .= '    $mappedClass = ResourceClassMap::getMappedClass('.$annotation->elementType.'::class);';
@@ -138,7 +145,9 @@ class CollectionTypeProcessor extends AbstractProcessor
                     $useName = $uses[$annotation->elementType];
                     $classUses[$annotation->elementType] = $factory->use($useName['name']);
                 } else {
-                    $classUses[$annotation->elementType] = $factory->use($class->getNamespaceName() . '\\' . $annotation->elementType);
+                    $classUses[$annotation->elementType] = $factory->use(
+                        $class->getNamespaceName() . '\\' . $annotation->elementType
+                    );
                 }
             }
             $body .= 'return new $mappedClass(' . $params . ');' . PHP_EOL;
@@ -210,4 +219,3 @@ class CollectionTypeProcessor extends AbstractProcessor
         return $useVisitor->getUses();
     }
 }
-

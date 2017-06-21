@@ -58,13 +58,16 @@ class ReferenceableProcessor extends AbstractProcessor
               * @JsonResource()
               * @Collectable()
               * @DiscriminatorValue(value="' . $typeId . '")
-              */');
-        $classBuilder->addStmt($factory->method('getObj')->makePublic()->setDocComment(
-            '/**
-              * @JsonField(type="' . $class->getShortName() . '")
-              * @return ' . $class->getShortName() . '
               */'
-        ));
+        );
+        $classBuilder->addStmt(
+            $factory->method('getObj')->makePublic()->setDocComment(
+                '/**
+                  * @JsonField(type="' . $class->getShortName() . '")
+                  * @return ' . $class->getShortName() . '
+                  */'
+            )
+        );
         $builder->addStmt($factory->use(JsonField::class));
         $builder->addStmt($factory->use(Collectable::class));
         $builder->addStmt($factory->use(JsonResource::class));
@@ -84,7 +87,8 @@ class ReferenceableProcessor extends AbstractProcessor
         return [$this->writeClass($fileName, $stmts)];
     }
 
-    private function camel2dashed($string) {
+    private function camel2dashed($string)
+    {
         return strtolower(preg_replace('/([a-zA-Z])(?=[A-Z])/', '$1-', $string));
     }
 }

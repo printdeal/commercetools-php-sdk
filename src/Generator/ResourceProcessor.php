@@ -151,7 +151,11 @@ class ResourceProcessor extends AbstractProcessor
             $propertyName = lcfirst(str_replace('get', '', $reflectionMethod->getName()));
 
             $annotation = $reader->getMethodAnnotation($reflectionMethod, JsonField::class);
-            list($getterUses, $propertyMethod) = $this->getPropertyGetter($reflectionMethod, $propertyName, $annotation);
+            list($getterUses, $propertyMethod) = $this->getPropertyGetter(
+                $reflectionMethod,
+                $propertyName,
+                $annotation
+            );
             $classUses = array_merge($classUses, $getterUses);
 
             $stmts[] = $propertyMethod;
@@ -200,14 +204,20 @@ class ResourceProcessor extends AbstractProcessor
                 }
             }
             $typeAnnotation = $this->getTypeAnnotation($propertyMethod, $annotation->type, $uses);
+            $namespace = $propertyMethod->getDeclaringClass()->getNamespaceName();
             if ($typeAnnotation instanceof Discriminator) {
                 if (isset($uses[$annotation->type])) {
                     $useName = $uses[$annotation->type];
-                    $classUses[$annotation->type . 'DiscriminatorResolver'] = $factory->use($useName['name'] . 'DiscriminatorResolver');
+                    $classUses[$annotation->type . 'DiscriminatorResolver'] = $factory->use(
+                        $useName['name'] . 'DiscriminatorResolver'
+                    );
                 } else {
-                    $classUses[$annotation->type . 'DiscriminatorResolver'] = $factory->use($propertyMethod->getDeclaringClass()->getNamespaceName() . '\\' . $annotation->type . 'DiscriminatorResolver');
+                    $classUses[$annotation->type . 'DiscriminatorResolver'] = $factory->use(
+                        $namespace . '\\' . $annotation->type . 'DiscriminatorResolver'
+                    );
                 }
-                $body .= '    $type = ' . $annotation->type . 'DiscriminatorResolver::discriminatorType($value, \'' . $typeAnnotation->name . '\');';
+                $body .= '    $type = ' . $annotation->type . 'DiscriminatorResolver::discriminatorType' .
+                    '($value, \'' . $typeAnnotation->name . '\');';
                 $body .= '    $mappedClass = ResourceClassMap::getMappedClass($type);';
             } else {
                 $body .= '    $mappedClass = ResourceClassMap::getMappedClass('.$annotation->type.'::class);';
@@ -215,7 +225,7 @@ class ResourceProcessor extends AbstractProcessor
                     $useName = $uses[$annotation->type];
                     $classUses[$annotation->type] = $factory->use($useName['name']);
                 } else {
-                    $classUses[$annotation->type] = $factory->use($propertyMethod->getDeclaringClass()->getNamespaceName() . '\\' . $annotation->type);
+                    $classUses[$annotation->type] = $factory->use($namespace . '\\' . $annotation->type);
                 }
             }
             $body .= '    if (is_null($value)) { return new $mappedClass([]); }' . PHP_EOL;

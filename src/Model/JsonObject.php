@@ -8,7 +8,7 @@ class JsonObject implements \JsonSerializable
 {
     private $rawData;
 
-    public function __construct(array $data =[])
+    public function __construct(array $data = [])
     {
         $this->rawData = $data;
     }
