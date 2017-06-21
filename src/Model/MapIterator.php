@@ -21,6 +21,7 @@ class MapIterator extends \ArrayIterator
     public function current()
     {
         $value = parent::current();
-        return call_user_func($this->callback, $value);
+        $key = parent::key();
+        return call_user_func($this->callback, $value, $key);
     }
 }

@@ -9,7 +9,7 @@ namespace Commercetools\Model\Type;
 use Commercetools\Generator\JsonResource;
 use Commercetools\Generator\JsonField;
 use Commercetools\Generator\Collectable;
-use Commercetools\Model\LocalizedString;
+use Commercetools\Model\Common\LocalizedString;
 
 /**
  * @JsonResource()

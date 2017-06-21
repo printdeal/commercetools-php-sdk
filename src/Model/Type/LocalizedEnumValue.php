@@ -6,7 +6,7 @@
 
 namespace Commercetools\Model\Type;
 
-use Commercetools\Model\LocalizedString;
+use Commercetools\Model\Common\LocalizedString;
 use Commercetools\Generator\JsonField;
 use Commercetools\Generator\JsonResource;
 use Commercetools\Generator\Collectable;

@@ -10,7 +10,7 @@ use Commercetools\Generator\JsonField;
 use Commercetools\Generator\JsonResource;
 use Commercetools\Generator\Collectable;
 use Commercetools\Generator\Referenceable;
-use Commercetools\Model\LocalizedString;
+use Commercetools\Model\Common\LocalizedString;
 use Commercetools\Model\Resource;
 
 /**

@@ -5,16 +5,19 @@
 
 namespace Commercetools\Model;
 
-class JsonCollection implements \IteratorAggregate
+class JsonCollection implements Collection, \JsonSerializable
 {
     private $rawData;
+    private $keys;
     private $indexes = [];
+    private $iterator;
 
     public function __construct(array $data = [])
     {
         $this->keys = array_keys($data);
         $this->index($data);
         $this->rawData = $data;
+        $this->iterator = $this->getIterator();
     }
 
     public function jsonSerialize()
@@ -60,7 +63,7 @@ class JsonCollection implements \IteratorAggregate
         return $this->map($this->raw($index), $index);
     }
 
-    protected function map($data, $index)
+    public function map($data, $index)
     {
         return $data;
     }
@@ -81,5 +84,45 @@ class JsonCollection implements \IteratorAggregate
     public function getIterator()
     {
         return new MapIterator($this->rawData, [$this, 'map']);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function current()
+    {
+        return $this->iterator->current();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function next()
+    {
+        $this->iterator->next();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function key()
+    {
+        $this->iterator->key();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function valid()
+    {
+        $this->iterator->valid();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function rewind()
+    {
+        $this->iterator->rewind();
     }
 }

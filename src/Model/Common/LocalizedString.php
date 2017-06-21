@@ -3,7 +3,9 @@
  * @author @jayS-de <jens.schulze@commercetools.de>
  */
 
-namespace Commercetools\Model;
+namespace Commercetools\Model\Common;
+
+use Commercetools\Model\JsonCollection;
 
 class LocalizedString extends JsonCollection
 {

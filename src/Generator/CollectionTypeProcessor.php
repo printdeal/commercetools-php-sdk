@@ -113,7 +113,7 @@ class CollectionTypeProcessor extends AbstractProcessor
         $method = $factory->method('map')
             ->addParam($factory->param('data'))
             ->addParam($factory->param('index'))
-            ->makeProtected()
+            ->makePublic()
             ->getNode();
         $uses = $this->getUses($class);
 

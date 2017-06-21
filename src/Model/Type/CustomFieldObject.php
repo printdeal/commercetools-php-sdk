@@ -20,8 +20,8 @@ interface CustomFieldObject
     public function getType();
 
     /**
-     * @JsonField(type="FieldDefinitionCollection", params={"type"})
-     * @return FieldDefinitionCollection
+     * @JsonField(type="FieldContainer", params={"type"})
+     * @return FieldContainer
      */
     public function getFields();
 }
