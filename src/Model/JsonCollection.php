@@ -79,7 +79,7 @@ class JsonCollection implements Collection, \JsonSerializable
     }
 
     /**
-     * @inheritDoc
+     * @return MapIterator
      */
     public function getIterator()
     {

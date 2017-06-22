@@ -8,4 +8,9 @@ namespace Commercetools\Model;
 interface Collection extends \IteratorAggregate
 {
     public function at($index);
+
+    /**
+     * @return MapIterator
+     */
+    public function getIterator();
 }

@@ -13,6 +13,8 @@ use Commercetools\Generator\DiscriminatorProcessor;
 use Commercetools\Generator\DiscriminatorValue;
 use Commercetools\Generator\DiscriminatorValueProcessor;
 use Commercetools\Generator\ModelGenerator;
+use Commercetools\Generator\Pageable;
+use Commercetools\Generator\PageableProcessor;
 use Commercetools\Generator\ReferenceableProcessor;
 use Commercetools\Generator\ResourceProcessor;
 use Symfony\Component\Console\Command\Command;
@@ -50,6 +52,7 @@ class GenerateModelsCommand extends Command
         $processors = [
             new ReferenceableProcessor($path, $outputPath),
             new CollectableProcessor($path, $outputPath),
+            new PageableProcessor($path, $outputPath),
         ];
         $runner = new AnnotationRunner($path, $processors);
         $runner->run();

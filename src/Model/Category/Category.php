@@ -11,12 +11,14 @@ use Commercetools\Generator\JsonField;
 use Commercetools\Generator\Collectable;
 use Commercetools\Generator\JsonResource;
 use Commercetools\Generator\Referenceable;
+use Commercetools\Generator\Pageable;
 use Commercetools\Model\Type\CustomFieldObject;
 
 /**
  * @JsonResource()
  * @Collectable(indexes={"id"})
  * @Referenceable()
+ * @Pageable()
  */
 interface Category extends Resource
 {

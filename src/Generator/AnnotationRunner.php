@@ -44,7 +44,8 @@ class AnnotationRunner
             DiscriminatorValue::class,
             Collectable::class,
             CollectionType::class,
-            Referenceable::class
+            Referenceable::class,
+            Pageable::class
         ];
         $this->annotations = $annotationClasses;
         foreach ($this->annotations as $annotationClass) {

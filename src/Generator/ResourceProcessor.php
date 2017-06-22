@@ -133,6 +133,7 @@ class ResourceProcessor extends AbstractProcessor
 
             $property = $factory
                 ->property($propertyName)
+                ->makePrivate()
             ;
 
             $stmts[] = $property;

@@ -82,6 +82,13 @@ class CollectableProcessor extends AbstractProcessor
             ->addParam($factory->param('index'));
         $classBuilder->addStmt($methodBuilder);
 
+        $methodBuilder = $factory->method('current')
+            ->makePublic()
+            ->setDocComment('/**
+                              * @return ' . $class->getShortName() . '
+                              */');
+        $classBuilder->addStmt($methodBuilder);
+
         $builder->addStmt($factory->use(CollectionType::class));
         $builder->addStmt($factory->use(Collection::class));
         $builder->addStmt($classBuilder);
