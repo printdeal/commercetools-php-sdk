@@ -13,16 +13,15 @@
   "autoload": {
     "psr-4": {
       "Commercetools\\Core\\": "src/Core/",
-      "Commercetools\\Commons\\": "src/Commons/",
-      "Commercetools\\Model\\": [
-        "src/Model/",
-        "target/Model/"
-      ]
+      "Commercetools\\Commons\\": "src/Commons/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Commercetools\\Generator\\": "src/Generator/",
+      "Commercetools\\": [
+        "src/",
+        "target/"
+      ],
       "Commercetools\\Core\\": [
         "tests/unit/",
         "tests/integration/"

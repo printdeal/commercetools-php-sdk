@@ -45,7 +45,7 @@ class AnnotationRunner
             Collectable::class,
             CollectionType::class,
             Referenceable::class,
-            Pageable::class
+            Queryable::class
         ];
         $this->annotations = $annotationClasses;
         foreach ($this->annotations as $annotationClass) {

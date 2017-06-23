@@ -13,8 +13,9 @@ use Commercetools\Generator\DiscriminatorProcessor;
 use Commercetools\Generator\DiscriminatorValue;
 use Commercetools\Generator\DiscriminatorValueProcessor;
 use Commercetools\Generator\ModelGenerator;
-use Commercetools\Generator\Pageable;
-use Commercetools\Generator\PageableProcessor;
+use Commercetools\Generator\Queryable;
+use Commercetools\Generator\QueryableRequestProcessor;
+use Commercetools\Generator\QueryableResultProcessor;
 use Commercetools\Generator\ReferenceableProcessor;
 use Commercetools\Generator\ResourceProcessor;
 use Symfony\Component\Console\Command\Command;
@@ -52,7 +53,7 @@ class GenerateModelsCommand extends Command
         $processors = [
             new ReferenceableProcessor($path, $outputPath),
             new CollectableProcessor($path, $outputPath),
-            new PageableProcessor($path, $outputPath),
+            new QueryableResultProcessor($path, $outputPath),
         ];
         $runner = new AnnotationRunner($path, $processors);
         $runner->run();
@@ -60,6 +61,7 @@ class GenerateModelsCommand extends Command
         $processors = [
             new ResourceProcessor($path, $outputPath),
             new CollectionTypeProcessor($path, $outputPath),
+            new QueryableRequestProcessor('Commercetools\Client', $path, dirname($outputPath) . '/Client'),
             new DiscriminatorProcessor($path, $outputPath),
             new ClassMapProcessor($namespace, $outputPath),
         ];

@@ -13,7 +13,7 @@ use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
 use ReflectionClass;
 
-class PageableProcessor extends AbstractProcessor
+class QueryableResultProcessor extends AbstractProcessor
 {
     private $path;
     private $outputPath;
@@ -31,7 +31,7 @@ class PageableProcessor extends AbstractProcessor
 
     public function getAnnotation()
     {
-        return Pageable::class;
+        return Queryable::class;
     }
 
     /**
@@ -39,7 +39,7 @@ class PageableProcessor extends AbstractProcessor
      */
     public function process(ReflectionClass $class, $annotation)
     {
-        if (!$annotation instanceof Pageable) {
+        if (!$annotation instanceof Queryable) {
             return [];
         }
         $factory = new BuilderFactory();
