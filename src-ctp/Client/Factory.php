@@ -201,15 +201,15 @@ class Factory
 
     public static function createResponse($response)
     {
+        if ($response instanceof ResponseInterface) {
+            return $response;
+        }
         if ($response instanceof GuzzleResponseInferface) {
             return new Response(
                 $response->getStatusCode(),
                 $response->getHeaders(),
                 (string)$response->getBody()
             );
-        }
-        if ($response instanceof ResponseInterface) {
-            return $response;
         }
 
         throw new \InvalidArgumentException(
