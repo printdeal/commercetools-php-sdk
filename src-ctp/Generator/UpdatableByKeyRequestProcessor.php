@@ -7,8 +7,6 @@ namespace Ctp\Generator;
 
 use Ctp\Client\SphereRequest;
 use Ctp\Model\PagedQueryResult;
-use GuzzleHttp\Psr7\Uri;
-use PhpParser\Builder\Use_;
 use PhpParser\BuilderFactory;
 use PhpParser\Node;
 use PhpParser\Node\Stmt;
@@ -19,9 +17,9 @@ use PhpParser\ParserFactory;
 use Psr\Http\Message\ResponseInterface;
 use ReflectionClass;
 
-class DeletableByIdRequestProcessor extends AbstractProcessor
+class UpdatableByKeyRequestProcessor extends AbstractProcessor
 {
-    const REQUEST_SUFFIX = 'ByIdDeleteRequest';
+    const REQUEST_SUFFIX = 'ByKeyUpdateRequest';
 
     private $path;
     private $outputPath;
@@ -41,7 +39,7 @@ class DeletableByIdRequestProcessor extends AbstractProcessor
 
     public function getAnnotation()
     {
-        return Deletable::class;
+        return Updatable::class;
     }
 
     /**
@@ -49,10 +47,10 @@ class DeletableByIdRequestProcessor extends AbstractProcessor
      */
     public function process(ReflectionClass $class, $annotation)
     {
-        if (!$annotation instanceof Deletable) {
+        if (!$annotation instanceof Updatable) {
             return [];
         }
-        if (!in_array(QueryType::BY_ID, $annotation->get)) {
+        if (!in_array(QueryType::BY_KEY, $annotation->get)) {
             return [];
         }
         $relativePath = trim(str_replace($this->path, '', dirname($class->getFileName())), '/');
@@ -80,18 +78,17 @@ class DeletableByIdRequestProcessor extends AbstractProcessor
         ]));
 
         $body = '
-        $uri = new Uri(sprintf(\'' . $annotation->uri . '/%s\', $id));
-        $uri = $uri->withQuery(build_query([\'version\' => $version]));
-        parent::__construct(\'' . $annotation->method . '\', $uri, $headers);
+        $uri = sprintf(\'' . $annotation->uri . '/key=%s\', $key);
+        parent::__construct(\'' . $annotation->method . '\', $uri, $headers, $body);
         ';
         $classBuilder->addStmt(
             $factory->method('__construct')
                 ->makePublic()
                 ->addParam(
-                    $factory->param('id')
+                    $factory->param('key')
                 )
                 ->addParam(
-                    $factory->param('version')
+                    $factory->param('body')
                 )
                 ->addParam(
                     $factory->param('headers')
@@ -106,8 +103,6 @@ class DeletableByIdRequestProcessor extends AbstractProcessor
         $builder->addStmt($factory->use($class->getNamespaceName() . '\\' . $resultType));
         $builder->addStmt($factory->use(ResponseInterface::class));
         $builder->addStmt($factory->use(SphereRequest::class));
-        $builder->addStmt($factory->use(Uri::class));
-        $builder->addStmt(new Use_('GuzzleHttp\Psr7\build_query', Stmt\Use_::TYPE_FUNCTION));
         $builder->addStmt($classBuilder);
 
         $node = $builder->getNode();

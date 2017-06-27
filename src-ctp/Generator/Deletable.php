@@ -11,18 +11,17 @@ use Doctrine\Common\Annotations\Annotation;
  * @Annotation
  * @Target({"CLASS"})
  */
-class Queryable extends Restable
+class Deletable extends Restable
 {
     /**
      * @var string
      */
-    public $method = 'GET';
+    public $method = 'DELETE';
 
     /**
      * @var array
      */
     public $get = [
-        QueryType::QUERY,
         QueryType::BY_ID
     ];
 
@@ -30,10 +29,6 @@ class Queryable extends Restable
      * @var array
      */
     public $options = [
-        QueryOptionType::EXPAND,
-        QueryOptionType::LIMIT,
-        QueryOptionType::OFFSET,
-        QueryOptionType::SORT,
-        QueryOptionType::WHERE
+        QueryOptionType::EXPAND
     ];
 }

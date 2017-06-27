@@ -10,16 +10,19 @@ use Ctp\Generator\Collectable;
 use Ctp\Generator\JsonResource;
 use Ctp\Generator\Referenceable;
 use Ctp\Generator\Queryable;
-use Ctp\Generator\Deleteable;
+use Ctp\Generator\Deletable;
+use Ctp\Generator\Updatable;
 use Ctp\Generator\QueryType;
+use Ctp\Generator\QueryOptionType;
 use Ctp\Model\Type\CustomFieldObject;
 
 /**
  * @JsonResource()
  * @Collectable(indexes={"id"})
  * @Referenceable()
- * @Queryable(uri="categories", get={QueryType::BY_ID, QueryType::BY_KEY})
- * @Deleteable(uri="categories", get={QueryType::BY_ID, QueryType::BY_KEY})
+ * @Queryable(uri="categories", get={QueryType::QUERY, QueryType::BY_ID, QueryType::BY_KEY})
+ * @Deletable(uri="categories", get={QueryType::BY_ID, QueryType::BY_KEY})
+ * @Updatable(uri="categories", get={QueryType::BY_ID, QueryType::BY_KEY})
  */
 interface Category extends Resource
 {

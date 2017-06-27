@@ -9,7 +9,7 @@ use Ctp\Generator\ClassMapProcessor;
 use Ctp\Generator\CollectableProcessor;
 use Ctp\Generator\CollectionTypeProcessor;
 use Ctp\Generator\DeletableByIdRequestProcessor;
-use Ctp\Generator\DeleteableByKeyRequestProcessor;
+use Ctp\Generator\DeletableByKeyRequestProcessor;
 use Ctp\Generator\DiscriminatorProcessor;
 use Ctp\Generator\QueryableByIdRequestProcessor;
 use Ctp\Generator\QueryableByKeyRequestProcessor;
@@ -17,6 +17,8 @@ use Ctp\Generator\QueryableRequestProcessor;
 use Ctp\Generator\QueryableResultProcessor;
 use Ctp\Generator\ReferenceableProcessor;
 use Ctp\Generator\ResourceProcessor;
+use Ctp\Generator\UpdatableByIdRequestProcessor;
+use Ctp\Generator\UpdatableByKeyRequestProcessor;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -65,7 +67,9 @@ class GenerateModelsCommand extends Command
             new QueryableByIdRequestProcessor('Ctp\Client', $path, $outputPathClient),
             new QueryableByKeyRequestProcessor('Ctp\Client', $path, $outputPathClient),
             new DeletableByIdRequestProcessor('Ctp\Client', $path, $outputPathClient),
-            new DeleteableByKeyRequestProcessor('Ctp\Client', $path, $outputPathClient),
+            new DeletableByKeyRequestProcessor('Ctp\Client', $path, $outputPathClient),
+            new UpdatableByIdRequestProcessor('Ctp\Client', $path, $outputPathClient),
+            new UpdatableByKeyRequestProcessor('Ctp\Client', $path, $outputPathClient),
             new DiscriminatorProcessor($path, $outputPathModel),
             new ClassMapProcessor($namespace, $outputPathModel),
         ];

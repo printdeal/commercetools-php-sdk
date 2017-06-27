@@ -6,25 +6,21 @@
 namespace Ctp\Generator;
 
 use Ctp\Client\SphereRequest;
-use Ctp\Model\Collection;
 use Ctp\Model\PagedQueryResult;
-use Ctp\Model\Reference;
-use Ctp\Model\ResultMapper;
-use PhpParser\Builder\Param;
 use PhpParser\BuilderFactory;
 use PhpParser\Node;
 use PhpParser\Node\Stmt;
 use PhpParser\Node\Expr;
-use PhpParser\Node\Scalar;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\ParserFactory;
 use Psr\Http\Message\ResponseInterface;
 use ReflectionClass;
 
-class DeleteableByKeyRequestProcessor extends AbstractProcessor
+class UpdatableByIdRequestProcessor extends AbstractProcessor
 {
-    const REQUEST_SUFFIX = 'ByKeyDeleteRequest';
+    const REQUEST_SUFFIX = 'ByIdUpdateRequest';
+
     private $path;
     private $outputPath;
     private $baseNamespace;
@@ -43,7 +39,7 @@ class DeleteableByKeyRequestProcessor extends AbstractProcessor
 
     public function getAnnotation()
     {
-        return Deleteable::class;
+        return Updatable::class;
     }
 
     /**
@@ -51,10 +47,10 @@ class DeleteableByKeyRequestProcessor extends AbstractProcessor
      */
     public function process(ReflectionClass $class, $annotation)
     {
-        if (!$annotation instanceof Deleteable) {
+        if (!$annotation instanceof Updatable) {
             return [];
         }
-        if (!in_array(QueryType::BY_KEY, $annotation->get)) {
+        if (!in_array(QueryType::BY_ID, $annotation->get)) {
             return [];
         }
         $relativePath = trim(str_replace($this->path, '', dirname($class->getFileName())), '/');
@@ -82,14 +78,17 @@ class DeleteableByKeyRequestProcessor extends AbstractProcessor
         ]));
 
         $body = '
-        $uri = sprintf(\'' . $annotation->uri . '/key=%s\', $key);
-        parent::__construct(\'' . $annotation->method . '\', $uri, $headers);
+        $uri = sprintf(\'' . $annotation->uri . '/%s\', $id);
+        parent::__construct(\'' . $annotation->method . '\', $uri, $headers, $body);
         ';
         $classBuilder->addStmt(
             $factory->method('__construct')
                 ->makePublic()
                 ->addParam(
-                    $factory->param('key')
+                    $factory->param('id')
+                )
+                ->addParam(
+                    $factory->param('body')
                 )
                 ->addParam(
                     $factory->param('headers')
@@ -99,6 +98,7 @@ class DeleteableByKeyRequestProcessor extends AbstractProcessor
                     (new ParserFactory())->create(ParserFactory::PREFER_PHP5)->parse('<?php ' . $body)
                 )
         );
+        $classBuilder->addStmts((new QueryOptionProcessor())->process($className, $annotation));
 
         $builder->addStmt($factory->use($class->getNamespaceName() . '\\' . $resultType));
         $builder->addStmt($factory->use(ResponseInterface::class));

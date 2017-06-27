@@ -19,9 +19,9 @@ use PhpParser\ParserFactory;
 use Psr\Http\Message\ResponseInterface;
 use ReflectionClass;
 
-class DeletableByIdRequestProcessor extends AbstractProcessor
+class DeletableByKeyRequestProcessor extends AbstractProcessor
 {
-    const REQUEST_SUFFIX = 'ByIdDeleteRequest';
+    const REQUEST_SUFFIX = 'ByKeyDeleteRequest';
 
     private $path;
     private $outputPath;
@@ -52,7 +52,7 @@ class DeletableByIdRequestProcessor extends AbstractProcessor
         if (!$annotation instanceof Deletable) {
             return [];
         }
-        if (!in_array(QueryType::BY_ID, $annotation->get)) {
+        if (!in_array(QueryType::BY_KEY, $annotation->get)) {
             return [];
         }
         $relativePath = trim(str_replace($this->path, '', dirname($class->getFileName())), '/');
@@ -80,7 +80,7 @@ class DeletableByIdRequestProcessor extends AbstractProcessor
         ]));
 
         $body = '
-        $uri = new Uri(sprintf(\'' . $annotation->uri . '/%s\', $id));
+        $uri = new Uri(sprintf(\'' . $annotation->uri . '/key=%s\', $key));
         $uri = $uri->withQuery(build_query([\'version\' => $version]));
         parent::__construct(\'' . $annotation->method . '\', $uri, $headers);
         ';
@@ -88,7 +88,7 @@ class DeletableByIdRequestProcessor extends AbstractProcessor
             $factory->method('__construct')
                 ->makePublic()
                 ->addParam(
-                    $factory->param('id')
+                    $factory->param('key')
                 )
                 ->addParam(
                     $factory->param('version')

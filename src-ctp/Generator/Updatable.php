@@ -11,20 +11,25 @@ use Doctrine\Common\Annotations\Annotation;
  * @Annotation
  * @Target({"CLASS"})
  */
-class Deleteable
+class Updatable extends Restable
 {
     /**
      * @var string
      */
-    public $uri;
-
-    /**
-     * @var string
-     */
-    public $method = 'DELETE';
+    public $method = 'POST';
 
     /**
      * @var array
      */
-    public $get;
+    public $get = [
+        QueryType::BY_ID
+    ];
+
+    /**
+     * @var array
+     */
+    public $options = [
+        QueryOptionType::EXPAND
+    ];
+
 }

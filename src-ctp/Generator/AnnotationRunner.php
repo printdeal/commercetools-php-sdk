@@ -45,8 +45,10 @@ class AnnotationRunner
             Collectable::class,
             CollectionType::class,
             Referenceable::class,
+            Restable::class,
             Queryable::class,
-            Deleteable::class,
+            Deletable::class,
+            Updatable::class,
             QueryType::class,
         ];
         $this->annotations = $annotationClasses;

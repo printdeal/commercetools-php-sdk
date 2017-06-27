@@ -54,6 +54,9 @@ class QueryableRequestProcessor extends AbstractProcessor
         if (!$annotation instanceof Queryable) {
             return [];
         }
+        if (!in_array(QueryType::QUERY, $annotation->get)) {
+            return [];
+        }
         $relativePath = trim(str_replace($this->path, '', dirname($class->getFileName())), '/');
 
         $factory = new BuilderFactory();
@@ -90,6 +93,7 @@ class QueryableRequestProcessor extends AbstractProcessor
                     (new ParserFactory())->create(ParserFactory::PREFER_PHP5)->parse('<?php ' . $body)
                 )
         );
+        $classBuilder->addStmts((new QueryOptionProcessor())->process($className, $annotation));
 
         $builder->addStmt($factory->use($class->getNamespaceName() . '\\' . $resultType));
         $builder->addStmt($factory->use(ResponseInterface::class));
