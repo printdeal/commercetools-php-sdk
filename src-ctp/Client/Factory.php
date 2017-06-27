@@ -46,7 +46,7 @@ class Factory
     ) {
         $factory = new static();
 
-        return $factory->getClient($options, $logger, $cache, $provider);
+        return $factory->createClient($options, $logger, $cache, $provider);
     }
 
     /**
@@ -56,8 +56,8 @@ class Factory
      * @param TokenProvider $provider
      * @return HttpClient
      */
-    public function getClient(
-        $options,
+    public function createClient(
+        array $options = [],
         LoggerInterface $logger = null,
         CacheItemPoolInterface $cache = null,
         TokenProvider $provider = null
@@ -65,6 +65,7 @@ class Factory
         if (is_null($cache)) {
             if (isset($options['cacheDir'])) {
                 $cacheDir = $options['cacheDir'];
+                unset($options['cacheDir']);
             } else {
                 $cacheDir = getcwd();
             }
@@ -73,18 +74,21 @@ class Factory
             $filesystem        = new Filesystem($filesystemAdapter);
             $cache = new FilesystemCachePool($filesystem);
         }
-        if (!isset($options['credentials'])) {
-            $options['credentials'] = [];
+        $credentials = [];
+        if (isset($options['credentials'])) {
+            $credentials = $options['credentials'];
+            unset($options['credentials']);
         }
         if (isset($options['project']) && !isset($options['base_uri'])) {
             $options['base_uri'] = self::API_URI . $options['project'] . '/';
+            unset($options['project']);
         }
-        $oauthHandler = $this->getHandler($options['credentials'], self::AUTH_URI, $cache, $provider);
+        $oauthHandler = $this->getHandler($credentials, self::AUTH_URI, $cache, $provider);
 
         if (self::isGuzzle6()) {
-            return $this->getGuzzle6($options, $logger, $oauthHandler);
+            return $this->createGuzzle6Client($options, $logger, $oauthHandler);
         } else {
-            return $this->getGuzzle5($options, $logger, $oauthHandler);
+            return $this->createGuzzle5Client($options, $logger, $oauthHandler);
         }
     }
 
@@ -95,7 +99,7 @@ class Factory
      * @param TokenProvider|null $provider
      * @return HttpClient
      */
-    private function getGuzzle6(
+    private function createGuzzle6Client(
         $options,
         LoggerInterface $logger = null,
         OAuth2Handler $oauthHandler
@@ -106,7 +110,6 @@ class Factory
         } else {
             $handler = $options['handler'];
         }
-
 
         $options = array_merge(
             [
@@ -140,7 +143,7 @@ class Factory
      * @param TokenProvider $provider
      * @return HttpClient
      */
-    private function getGuzzle5(
+    private function createGuzzle5Client(
         $options,
         LoggerInterface $logger = null,
         OAuth2Handler $oauthHandler
