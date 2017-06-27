@@ -1,0 +1,29 @@
+<?php
+/**
+ * @author @jayS-de <jens.schulze@commercetools.de>
+ */
+
+namespace Ctp\Generator;
+
+use Doctrine\Common\Annotations\Annotation;
+
+/**
+ * @Annotation
+ * @Target({"CLASS"})
+ */
+class CollectionType
+{
+    /**
+     * @var string
+     */
+    public $type;
+    /**
+     * @var string
+     */
+    public $elementType;
+
+    /**
+     * @var array
+     */
+    public $indexes = [];
+}

@@ -18,8 +18,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Commercetools\\": [
-        "src/",
+      "Ctp\\": [
+        "src-ctp/",
         "target/"
       ],
       "Commercetools\\Core\\": [
