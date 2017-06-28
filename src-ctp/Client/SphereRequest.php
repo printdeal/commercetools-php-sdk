@@ -18,6 +18,31 @@ class SphereRequest extends Request
     private $queryParts;
     private $query;
 
+    /**
+     * @inheritDoc
+     */
+    public function __construct($method, $uri, array $headers = [], $body = null, $version = '1.1')
+    {
+        $headers = $this->ensureHeader($headers, 'Content-Type', 'application/json');
+
+        parent::__construct($method, $uri, $headers, $body, $version);
+    }
+
+    private function ensureHeader(array $headers, $header, $defaultValue)
+    {
+        $normalizedHeader = strtolower($header);
+        foreach ($headers as $header => $value) {
+            $normalized = strtolower($header);
+            if ($normalized !== $normalizedHeader) {
+                continue;
+            }
+            return $headers;
+        }
+        $headers[$header] = $defaultValue;
+
+        return $headers;
+    }
+
     public function map(ResponseInterface $response)
     {
         return ResultMapper::mapResponseToClass(static::RESULT_TYPE, $response);
