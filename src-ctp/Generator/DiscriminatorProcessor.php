@@ -38,11 +38,17 @@ class DiscriminatorProcessor extends AbstractProcessor
      */
     public function process(ReflectionClass $class, $annotation)
     {
-        $parentInterface = current($class->getInterfaceNames());
-        $this->discriminatorValueClasses[$parentInterface][$class->getName()][\ReflectionClass::class] = $class;
-        $this->discriminatorValueClasses[$parentInterface][$class->getName()][DiscriminatorValue::class] = $annotation;
+        if ($annotation instanceof Discriminator) {
+            $reflectedClass = $class;
+            $parentInterface = $class->getName();
+        } else {
+            $parentInterface = current($class->getInterfaceNames());
+            $this->discriminatorValueClasses[$parentInterface][$class->getName()][\ReflectionClass::class] = $class;
+            $this->discriminatorValueClasses[$parentInterface][$class->getName()][DiscriminatorValue::class] = $annotation;
 
-        $reflectedClass = new ReflectionClass($parentInterface);
+            $reflectedClass = new ReflectionClass($parentInterface);
+        }
+
         $factory = new BuilderFactory();
         $builder = $factory->namespace($reflectedClass->getNamespaceName());
 
@@ -51,23 +57,26 @@ class DiscriminatorProcessor extends AbstractProcessor
         $className = $reflectedClass->getShortName() . 'DiscriminatorResolver';
         $classBuilder = $factory->class($className);
         $types = [];
-        /**
-         * @var DiscriminatorValue $discriminatorValue
-         */
-        $classValues = $this->discriminatorValueClasses[$parentInterface];
-        foreach ($classValues as $valueClass => $discriminatorValue) {
+
+        if ($annotation instanceof DiscriminatorValue) {
             /**
-             * @var ReflectionClass $reflectedValueClass
+             * @var DiscriminatorValue $discriminatorValue
              */
-            $reflectedValueClass = $discriminatorValue[ReflectionClass::class];
-            $types[] = new Expr\ArrayItem(
-                new Expr\ClassConstFetch(
-                    new Node\Name($reflectedValueClass->getShortName()),
-                    'class'
-                ),
-                new Scalar\String_($discriminatorValue[DiscriminatorValue::class]->value)
-            );
-            $builder->addStmt($factory->use($reflectedValueClass->getName()));
+            $classValues = $this->discriminatorValueClasses[$parentInterface];
+            foreach ($classValues as $valueClass => $discriminatorValue) {
+                /**
+                 * @var ReflectionClass $reflectedValueClass
+                 */
+                $reflectedValueClass = $discriminatorValue[ReflectionClass::class];
+                $types[] = new Expr\ArrayItem(
+                    new Expr\ClassConstFetch(
+                        new Node\Name($reflectedValueClass->getShortName()),
+                        'class'
+                    ),
+                    new Scalar\String_($discriminatorValue[DiscriminatorValue::class]->value)
+                );
+                $builder->addStmt($factory->use($reflectedValueClass->getName()));
+            }
         }
         $classBuilder->addStmt(new Stmt\ClassConst([
             new Node\Const_('TYPES', new Expr\Array_($types, ['kind' => Expr\Array_::KIND_SHORT]))
@@ -114,6 +123,6 @@ class DiscriminatorProcessor extends AbstractProcessor
 
     public function getAnnotation()
     {
-        return DiscriminatorValue::class;
+        return [DiscriminatorValue::class, Discriminator::class];
     }
 }

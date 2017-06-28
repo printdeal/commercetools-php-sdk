@@ -100,6 +100,16 @@ class QueryableByKeyRequestProcessor extends AbstractProcessor
                 )
         );
 
+        $body = 'return $this->getUri()->withPath(sprintf(\'' . $annotation->uri . '/key=%s\', $key));';
+        $classBuilder->addStmt(
+            $factory->method('withKey')
+                ->makePublic()
+                ->addParam($factory->param('key'))
+                ->addStmts(
+                    (new ParserFactory())->create(ParserFactory::PREFER_PHP5)->parse('<?php ' . $body)
+                )
+        );
+
         $builder->addStmt($factory->use($class->getNamespaceName() . '\\' . $resultType));
         $builder->addStmt($factory->use(ResponseInterface::class));
         $builder->addStmt($factory->use(SphereRequest::class));

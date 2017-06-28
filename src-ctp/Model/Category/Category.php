@@ -40,6 +40,7 @@ interface Category extends Resource
 
     /**
      * @JsonField(type="LocalizedString")
+     * @return LocalizedString
      */
     public function getDescription();
 

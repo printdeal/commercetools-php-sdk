@@ -7,6 +7,7 @@ namespace Ctp\Generator;
 
 use Ctp\Client\SphereRequest;
 use Ctp\Model\PagedQueryResult;
+use Ctp\Model\Update;
 use PhpParser\BuilderFactory;
 use PhpParser\Node;
 use PhpParser\Node\Stmt;
@@ -79,7 +80,7 @@ class UpdatableByKeyRequestProcessor extends AbstractProcessor
 
         $body = '
         $uri = sprintf(\'' . $annotation->uri . '/key=%s\', $key);
-        parent::__construct(\'' . $annotation->method . '\', $uri, $headers, $body);
+        parent::__construct(\'' . $annotation->method . '\', $uri, $headers, json_encode($update));
         ';
         $classBuilder->addStmt(
             $factory->method('__construct')
@@ -88,7 +89,7 @@ class UpdatableByKeyRequestProcessor extends AbstractProcessor
                     $factory->param('key')
                 )
                 ->addParam(
-                    $factory->param('body')
+                    $factory->param('update')->setTypeHint('Update')
                 )
                 ->addParam(
                     $factory->param('headers')
@@ -100,9 +101,30 @@ class UpdatableByKeyRequestProcessor extends AbstractProcessor
         );
         $classBuilder->addStmts((new QueryOptionProcessor())->process($className, $annotation));
 
+        $body = 'return $this->withBody(json_encode($update));';
+        $classBuilder->addStmt(
+            $factory->method('withUpdate')
+                ->makePublic()
+                ->addParam($factory->param('update')->setTypeHint('Update'))
+                ->addStmts(
+                    (new ParserFactory())->create(ParserFactory::PREFER_PHP5)->parse('<?php ' . $body)
+                )
+        );
+
+        $body = 'return $this->getUri()->withPath(sprintf(\'' . $annotation->uri . '/key=%s\', $key));';
+        $classBuilder->addStmt(
+            $factory->method('withKey')
+                ->makePublic()
+                ->addParam($factory->param('key'))
+                ->addStmts(
+                    (new ParserFactory())->create(ParserFactory::PREFER_PHP5)->parse('<?php ' . $body)
+                )
+        );
+
         $builder->addStmt($factory->use($class->getNamespaceName() . '\\' . $resultType));
         $builder->addStmt($factory->use(ResponseInterface::class));
         $builder->addStmt($factory->use(SphereRequest::class));
+        $builder->addStmt($factory->use(Update::class));
         $builder->addStmt($classBuilder);
 
         $node = $builder->getNode();

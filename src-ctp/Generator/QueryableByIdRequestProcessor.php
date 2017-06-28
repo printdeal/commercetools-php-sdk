@@ -100,6 +100,16 @@ class QueryableByIdRequestProcessor extends AbstractProcessor
                 )
         );
 
+        $body = 'return $this->getUri()->withPath(sprintf(\'' . $annotation->uri . '/%s\', $id));';
+        $classBuilder->addStmt(
+            $factory->method('withId')
+                ->makePublic()
+                ->addParam($factory->param('id'))
+                ->addStmts(
+                    (new ParserFactory())->create(ParserFactory::PREFER_PHP5)->parse('<?php ' . $body)
+                )
+        );
+
         $builder->addStmt($factory->use($class->getNamespaceName() . '\\' . $resultType));
         $builder->addStmt($factory->use(ResponseInterface::class));
         $builder->addStmt($factory->use(SphereRequest::class));
