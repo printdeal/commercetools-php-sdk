@@ -5,7 +5,7 @@
 
 namespace Commercetools\Core\Query;
 
-class StringQuerySortingModelImpl extends QueryModelImpl implements StringQueryModel
+class StringQuerySortingModel extends QueryModel
 {
     /**
      * @inheritDoc

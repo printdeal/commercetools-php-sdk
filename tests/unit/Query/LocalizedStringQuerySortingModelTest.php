@@ -17,7 +17,7 @@ class LocalizedStringQuerySortingModelTest extends TestCase
     public function __construct($name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
-        $this->model = new LocalizedStringQuerySortingModelImpl(null, 'thepath');
+        $this->model = new LocalizedStringQuerySortingModel(null, 'thepath');
     }
 
 

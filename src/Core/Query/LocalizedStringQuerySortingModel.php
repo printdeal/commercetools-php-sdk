@@ -5,27 +5,37 @@
 
 namespace Commercetools\Core\Query;
 
-interface LocalizedStringQuerySortingModel
+class LocalizedStringQuerySortingModel extends QueryModel
 {
     /**
-     * @param $locale
-     * @return StringQueryModel
+     * @inheritdoc
      */
-    public function lang($locale);
+    public function lang($locale)
+    {
+        return $this->locale($locale);
+    }
 
     /**
-     * @param $locale
-     * @return StringQueryModel
+     * @inheritdoc
      */
-    public function locale($locale);
+    public function locale($locale)
+    {
+        return $this->stringModel($locale);
+    }
 
     /**
-     * @return QueryPredicate
+     * @inheritdoc
      */
-    public function isNotPresent();
+    public function isNotPresent()
+    {
+        return $this->isNotPresentPredicate();
+    }
 
     /**
-     * @return QueryPredicate
+     * @inheritdoc
      */
-    public function isPresent();
+    public function isPresent()
+    {
+        return $this->isPresentPredicate();
+    }
 }

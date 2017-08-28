@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 class StringQuerySortingModelTest extends TestCase
 {
     /**
-     * @var StringQuerySortingModelImpl
+     * @var StringQuerySortingModel
      */
     private $model;
 
@@ -21,7 +21,7 @@ class StringQuerySortingModelTest extends TestCase
     public function __construct($name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
-        $this->model = new StringQuerySortingModelImpl(null, 'id');
+        $this->model = new StringQuerySortingModel(null, 'id');
     }
 
     public function testGenerateSimpleQueries()
@@ -76,16 +76,16 @@ class StringQuerySortingModelTest extends TestCase
 
     public function generateHiearchicalQueries()
     {
-        $parent = new QueryModelImpl(
-            new QueryModelImpl(
-                new QueryModelImpl(
-                    new QueryModelImpl(null, 'x1'),
+        $parent = new QueryModel(
+            new QueryModel(
+                new QueryModel(
+                    new QueryModel(null, 'x1'),
                     'x2'),
                 'x3'),
             'x4');
         $this->assertSame(
             'x1(x2(x3(x4(x5="foo"))))',
-            (new StringQuerySortingModelImpl($parent, 'x5'))->is('foo')
+            (new StringQuerySortingModel($parent, 'x5'))->is('foo')
         );
     }
 }
