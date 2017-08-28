@@ -16,4 +16,22 @@ namespace Commercetools\Core\Model\Common;
 class GeoPoint extends GeoLocation
 {
     const TYPE_NAME = 'Point';
+    const LONGITUDE = 0;
+    const LATITUDE = 1;
+
+    public function getLatitude()
+    {
+        return $this->getCoordinate(self::LATITUDE);
+    }
+
+    public function getLongitude()
+    {
+        return $this->getCoordinate(self::LONGITUDE);
+    }
+
+    private function getCoordinate($index)
+    {
+        $coordinates = $this->getCoordinates();
+        return isset($coordinates[$index]) ? $coordinates[$index] : 0;
+    }
 }
