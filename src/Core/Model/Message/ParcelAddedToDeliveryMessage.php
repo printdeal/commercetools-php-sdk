@@ -14,7 +14,6 @@ use DateTime;
 /**
  * @package Commercetools\Core\Model\Message
  * @link https://dev.commercetools.com/http-api-projects-messages.html#parceladdedtodelivery-message
- * @method string getId()
  * @method ParcelAddedToDeliveryMessage setId(string $id = null)
  * @method DateTimeDecorator getCreatedAt()
  * @method ParcelAddedToDeliveryMessage setCreatedAt(DateTime $createdAt = null)

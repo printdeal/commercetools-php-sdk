@@ -13,7 +13,6 @@ use Commercetools\Core\Model\Common\Reference;
  * @link https://dev.commercetools.com/http-api-types.html#reference-types
  * @method string getTypeId()
  * @method CustomObjectReference setTypeId(string $typeId = null)
- * @method string getId()
  * @method CustomObjectReference setId(string $id = null)
  * @method string getKey()
  * @method CustomObjectReference setKey(string $key = null)

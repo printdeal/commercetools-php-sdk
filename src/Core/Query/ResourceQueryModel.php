@@ -5,8 +5,15 @@
 
 namespace Commercetools\Core\Query;
 
+use Commercetools\Core\Model\Identifiable;
+
 class ResourceQueryModel extends QueryModel
 {
+    public function is(Identifiable $identifier)
+    {
+        return $this->id()->is($identifier->getId());
+    }
+
     public function id()
     {
         return $this->stringModel("id");

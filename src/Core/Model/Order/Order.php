@@ -25,7 +25,6 @@ use DateTime;
 /**
  * @package Commercetools\Core\Model\Order
  * @link https://dev.commercetools.com/http-api-projects-orders.html#order
- * @method string getId()
  * @method Order setId(string $id = null)
  * @method int getVersion()
  * @method Order setVersion(int $version = null)

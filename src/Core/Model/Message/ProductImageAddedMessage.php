@@ -14,7 +14,6 @@ use DateTime;
 /**
  * @package Commercetools\Core\Model\Message
  * @link https://dev.commercetools.com/http-api-projects-messages.html#productimageadded-message
- * @method string getId()
  * @method ProductImageAddedMessage setId(string $id = null)
  * @method int getVersion()
  * @method ProductImageAddedMessage setVersion(int $version = null)

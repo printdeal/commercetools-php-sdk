@@ -5,13 +5,13 @@
 
 namespace Commercetools\Core\Model\Common;
 
+use Commercetools\Core\Model\Identifiable;
 use DateTime;
 
 /**
  * @package Commercetools\Core\Model\Common
- * @method getId()
  */
-abstract class Resource extends JsonObject implements ReferenceObjectInterface
+abstract class Resource extends JsonObject implements ReferenceObjectInterface, Identifiable
 {
     public function fieldDefinitions()
     {
@@ -27,6 +27,18 @@ abstract class Resource extends JsonObject implements ReferenceObjectInterface
                 static::DECORATOR => DateTimeDecorator::class
             ],
         ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getId()
+    {
+        /**
+         * @var string $id
+         */
+        $id = parent::getId();
+        return $id;
     }
 
     public function getReferenceIdentifier()

@@ -20,7 +20,6 @@ use DateTime;
 /**
  * @package Commercetools\Core\Model\Cart
  * @link https://dev.commercetools.com/http-api-projects-carts.html#cart
- * @method string getId()
  * @method Cart setId(string $id = null)
  * @method int getVersion()
  * @method Cart setVersion(int $version = null)

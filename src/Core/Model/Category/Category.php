@@ -15,7 +15,6 @@ use DateTime;
 /**
  * @package Commercetools\Core\Model\Category
  * @link https://dev.commercetools.com/http-api-projects-categories.html#category
- * @method string getId()
  * @method Category setId(string $id = null)
  * @method int getVersion()
  * @method Category setVersion(int $version = null)

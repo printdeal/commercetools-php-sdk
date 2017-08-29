@@ -14,7 +14,6 @@ use DateTime;
 /**
  * @package Commercetools\Core\Model\Message
  * @link https://dev.commercetools.com/http-api-projects-messages.html#inventoryentrydeleted-message
- * @method string getId()
  * @method InventoryEntryDeletedMessage setId(string $id = null)
  * @method int getVersion()
  * @method InventoryEntryDeletedMessage setVersion(int $version = null)

@@ -13,7 +13,6 @@ use DateTime;
  * @package Commercetools\Core\Model\Message
  * @link https://dev.commercetools.com/http-api-projects-messages.html#ordercustomeremailset-message
  *
- * @method string getId()
  * @method OrderCustomerEmailSetMessage setId(string $id = null)
  * @method int getVersion()
  * @method OrderCustomerEmailSetMessage setVersion(int $version = null)

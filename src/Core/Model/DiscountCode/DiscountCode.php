@@ -15,7 +15,6 @@ use DateTime;
 /**
  * @package Commercetools\Core\Model\DiscountCode
  * @link https://dev.commercetools.com/http-api-projects-discountCodes.html#discountcode
- * @method string getId()
  * @method DiscountCode setId(string $id = null)
  * @method int getVersion()
  * @method DiscountCode setVersion(int $version = null)

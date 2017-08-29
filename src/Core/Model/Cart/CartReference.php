@@ -15,7 +15,6 @@ use Commercetools\Core\Model\Common\Reference;
  * @link https://dev.commercetools.com/http-api-projects-carts.html#cart
  * @method string getTypeId()
  * @method CartReference setTypeId(string $typeId = null)
- * @method string getId()
  * @method CartReference setId(string $id = null)
  * @method Cart getObj()
  * @method CartReference setObj(Cart $obj = null)

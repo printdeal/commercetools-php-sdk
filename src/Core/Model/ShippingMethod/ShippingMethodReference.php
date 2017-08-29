@@ -14,7 +14,6 @@ use Commercetools\Core\Model\Common\Reference;
  * @link https://dev.commercetools.com/http-api-projects-shippingMethods.html#shippingmethod
  * @method string getTypeId()
  * @method ShippingMethodReference setTypeId(string $typeId = null)
- * @method string getId()
  * @method ShippingMethodReference setId(string $id = null)
  * @method ShippingMethod getObj()
  * @method ShippingMethodReference setObj(ShippingMethod $obj = null)

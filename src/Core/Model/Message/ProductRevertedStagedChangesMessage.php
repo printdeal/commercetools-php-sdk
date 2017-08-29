@@ -12,7 +12,6 @@ use Commercetools\Core\Model\Common\Reference;
 /**
  * @package Commercetools\Core\Model\Message
  * @link https://dev.commercetools.com/http-api-projects-messages.html#productrevertedstagedchanges-message
- * @method string getId()
  * @method ProductRevertedStagedChangesMessage setId(string $id = null)
  * @method int getVersion()
  * @method ProductRevertedStagedChangesMessage setVersion(int $version = null)

@@ -15,7 +15,6 @@ use Commercetools\Core\Model\Common\Reference;
  * @link https://dev.commercetools.com/http-api-projects-products.html#product
  * @method string getTypeId()
  * @method ProductReference setTypeId(string $typeId = null)
- * @method string getId()
  * @method ProductReference setId(string $id = null)
  * @method Product getObj()
  * @method ProductReference setObj(Product $obj = null)

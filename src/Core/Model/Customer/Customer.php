@@ -18,7 +18,6 @@ use DateTime;
 /**
  * @package Commercetools\Core\Model\Customer
  * @link https://dev.commercetools.com/http-api-projects-customers.html#customer
- * @method string getId()
  * @method Customer setId(string $id = null)
  * @method int getVersion()
  * @method Customer setVersion(int $version = null)

@@ -14,7 +14,6 @@ use Commercetools\Core\Model\Common\Reference;
  * @link https://dev.commercetools.com/http-api-projects-payments.html#payment
  * @method string getTypeId()
  * @method PaymentReference setTypeId(string $typeId = null)
- * @method string getId()
  * @method PaymentReference setId(string $id = null)
  * @method Payment getObj()
  * @method PaymentReference setObj(Payment $obj = null)

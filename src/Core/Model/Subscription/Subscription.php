@@ -16,7 +16,6 @@ use DateTime;
 /**
  * @package Commercetools\Core\Model\Subscription
  * @link https://dev.commercetools.com/http-api-projects-subscriptions.html#subscription
- * @method string getId()
  * @method Subscription setId(string $id = null)
  * @method int getVersion()
  * @method Subscription setVersion(int $version = null)

@@ -12,7 +12,6 @@ use DateTime;
 /**
  * @package Commercetools\Core\Model\CustomObject
  * @link https://dev.commercetools.com/http-api-projects-custom-objects.html#customobject
- * @method string getId()
  * @method CustomObject setId(string $id = null)
  * @method int getVersion()
  * @method CustomObject setVersion(int $version = null)

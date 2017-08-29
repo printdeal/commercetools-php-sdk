@@ -14,7 +14,6 @@ use DateTime;
  * @package Commercetools\Core\Model\Message
  * @link https://dev.commercetools.com/http-api-projects-messages.html#orderbillingaddressset-message
  *
- * @method string getId()
  * @method OrderBillingAddressSetMessage setId(string $id = null)
  * @method int getVersion()
  * @method OrderBillingAddressSetMessage setVersion(int $version = null)

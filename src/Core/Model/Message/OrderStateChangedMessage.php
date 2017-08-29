@@ -12,7 +12,6 @@ use DateTime;
 /**
  * @package Commercetools\Core\Model\Message
  * @link https://dev.commercetools.com/http-api-projects-messages.html#orderstatechanged-message
- * @method string getId()
  * @method OrderStateChangedMessage setId(string $id = null)
  * @method DateTimeDecorator getCreatedAt()
  * @method OrderStateChangedMessage setCreatedAt(DateTime $createdAt = null)

@@ -13,7 +13,6 @@ use DateTime;
 /**
  * @package Commercetools\Core\Model\Message
  * @link https://dev.commercetools.com/http-api-projects-messages.html#productstatetransition-message
- * @method string getId()
  * @method ProductStateTransitionMessage setId(string $id = null)
  * @method DateTimeDecorator getCreatedAt()
  * @method ProductStateTransitionMessage setCreatedAt(DateTime $createdAt = null)

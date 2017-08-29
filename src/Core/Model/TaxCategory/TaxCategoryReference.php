@@ -15,7 +15,6 @@ use Commercetools\Core\Model\Common\Reference;
  * @link https://dev.commercetools.com/http-api-projects-taxCategories.html#taxcategory
  * @method string getTypeId()
  * @method TaxCategoryReference setTypeId(string $typeId = null)
- * @method string getId()
  * @method TaxCategoryReference setId(string $id = null)
  * @method TaxCategory getObj()
  * @method TaxCategoryReference setObj(TaxCategory $obj = null)

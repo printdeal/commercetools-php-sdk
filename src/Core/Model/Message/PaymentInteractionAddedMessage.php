@@ -13,7 +13,6 @@ use DateTime;
 /**
  * @package Commercetools\Core\Model\Message
  * @link https://dev.commercetools.com/http-api-projects-messages.html#paymentinteractionadded-message
- * @method string getId()
  * @method PaymentInteractionAddedMessage setId(string $id = null)
  * @method DateTimeDecorator getCreatedAt()
  * @method PaymentInteractionAddedMessage setCreatedAt(DateTime $createdAt = null)

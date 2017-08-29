@@ -13,7 +13,6 @@ use DateTime;
 /**
  * @package Commercetools\Core\Model\TaxCategory
  * @link https://dev.commercetools.com/http-api-projects-taxCategories.html#taxcategory
- * @method string getId()
  * @method TaxCategory setId(string $id = null)
  * @method int getVersion()
  * @method TaxCategory setVersion(int $version = null)

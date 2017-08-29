@@ -12,7 +12,6 @@ use DateTime;
 /**
  * @package Commercetools\Core\Model\Zone
  * @link https://dev.commercetools.com/http-api-projects-zones.html#zone
- * @method string getId()
  * @method Zone setId(string $id = null)
  * @method int getVersion()
  * @method Zone setVersion(int $version = null)

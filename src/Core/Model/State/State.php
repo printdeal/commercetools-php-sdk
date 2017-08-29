@@ -13,7 +13,6 @@ use DateTime;
 /**
  * @package Commercetools\Core\Model\State
  * @link https://dev.commercetools.com/http-api-projects-states.html#state
- * @method string getId()
  * @method State setId(string $id = null)
  * @method int getVersion()
  * @method State setVersion(int $version = null)

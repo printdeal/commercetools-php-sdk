@@ -16,7 +16,6 @@ use DateTime;
 /**
  * @package Commercetools\Core\Model\Payment
  * @link https://dev.commercetools.com/http-api-projects-payments.html#payment
- * @method string getId()
  * @method Payment setId(string $id = null)
  * @method int getVersion()
  * @method Payment setVersion(int $version = null)

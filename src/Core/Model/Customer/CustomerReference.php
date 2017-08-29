@@ -15,7 +15,6 @@ use Commercetools\Core\Model\Common\Reference;
  * @link https://dev.commercetools.com/http-api-projects-customers.html#customer
  * @method string getTypeId()
  * @method CustomerReference setTypeId(string $typeId = null)
- * @method string getId()
  * @method CustomerReference setId(string $id = null)
  * @method Customer getObj()
  * @method CustomerReference setObj(Customer $obj = null)

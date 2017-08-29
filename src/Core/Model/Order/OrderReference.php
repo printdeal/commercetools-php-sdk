@@ -15,7 +15,6 @@ use Commercetools\Core\Model\Common\Reference;
  * @link https://dev.commercetools.com/http-api-projects-orders.html#order
  * @method string getTypeId()
  * @method OrderReference setTypeId(string $typeId = null)
- * @method string getId()
  * @method OrderReference setId(string $id = null)
  * @method Order getObj()
  * @method OrderReference setObj(Order $obj = null)

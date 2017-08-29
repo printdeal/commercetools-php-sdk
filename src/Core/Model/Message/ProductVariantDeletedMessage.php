@@ -13,7 +13,6 @@ use Commercetools\Core\Model\Common\Reference;
 /**
  * @package Commercetools\Core\Model\Message
  * @link https://dev.commercetools.com/http-api-projects-messages.html#productvariantdeleted-message
- * @method string getId()
  * @method ProductVariantDeletedMessage setId(string $id = null)
  * @method int getVersion()
  * @method ProductVariantDeletedMessage setVersion(int $version = null)

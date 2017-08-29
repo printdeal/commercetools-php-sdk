@@ -14,6 +14,7 @@ use Commercetools\Core\Model\Customer\CustomerReference;
 use Commercetools\Core\Model\CustomerGroup\CustomerGroupReference;
 use Commercetools\Core\Model\CustomObject\CustomObjectReference;
 use Commercetools\Core\Model\DiscountCode\DiscountCodeReference;
+use Commercetools\Core\Model\Identifiable;
 use Commercetools\Core\Model\Order\OrderReference;
 use Commercetools\Core\Model\Payment\PaymentReference;
 use Commercetools\Core\Model\Product\ProductReference;
@@ -29,7 +30,6 @@ use Commercetools\Core\Model\Zone\ZoneReference;
  * @package Commercetools\Core\Model\Common
  * @link https://dev.commercetools.com/http-api-types.html#reference
  * @method string getTypeId()
- * @method string getId()
  * @method Reference setTypeId(string $typeId = null)
  * @method Reference setId(string $id = null)
  * @method JsonObject getObj()
@@ -37,7 +37,7 @@ use Commercetools\Core\Model\Zone\ZoneReference;
  * @method string getKey()
  * @method Reference setKey(string $key = null)
  */
-class Reference extends ResourceIdentifier
+class Reference extends ResourceIdentifier implements Identifiable
 {
     const OBJ = 'obj';
 
@@ -49,6 +49,18 @@ class Reference extends ResourceIdentifier
         $fieldDefinitions[static::OBJ] = [static::TYPE => static::TYPE_CLASS];
 
         return $fieldDefinitions;
+    }
+
+    /**
+     * @return string
+     */
+    public function getId()
+    {
+        /**
+         * @var string $id
+         */
+        $id = parent::getId();
+        return $id;
     }
 
     /**

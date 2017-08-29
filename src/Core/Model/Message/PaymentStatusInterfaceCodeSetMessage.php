@@ -13,7 +13,6 @@ use DateTime;
 /**
  * @package Commercetools\Core\Model\Message
  * @link https://dev.commercetools.com/http-api-projects-messages.html#paymentstatusinterfacecodeset-message
- * @method string getId()
  * @method PaymentStatusInterfaceCodeSetMessage setId(string $id = null)
  * @method int getVersion()
  * @method PaymentStatusInterfaceCodeSetMessage setVersion(int $version = null)

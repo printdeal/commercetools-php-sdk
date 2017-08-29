@@ -15,7 +15,6 @@ use Commercetools\Core\Model\Common\Reference;
  * @link https://dev.commercetools.com/http-api-projects-states.html#state
  * @method string getTypeId()
  * @method StateReference setTypeId(string $typeId = null)
- * @method string getId()
  * @method StateReference setId(string $id = null)
  * @method State getObj()
  * @method StateReference setObj(State $obj = null)

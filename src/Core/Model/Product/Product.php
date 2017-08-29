@@ -18,7 +18,6 @@ use DateTime;
 /**
  * @package Commercetools\Core\Model\Product
  * @link https://dev.commercetools.com/http-api-projects-products.html#product
- * @method string getId()
  * @method Product setId(string $id = null)
  * @method int getVersion()
  * @method Product setVersion(int $version = null)

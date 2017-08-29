@@ -15,7 +15,6 @@ use Commercetools\Core\Model\Common\Reference;
  * @link https://dev.commercetools.com/http-api-projects-categories.html#category
  * @method string getTypeId()
  * @method CategoryReference setTypeId(string $typeId = null)
- * @method string getId()
  * @method CategoryReference setId(string $id = null)
  * @method Category getObj()
  * @method CategoryReference setObj(Category $obj = null)

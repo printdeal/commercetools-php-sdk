@@ -17,7 +17,6 @@ use DateTime;
 /**
  * @package Commercetools\Core\Model\Channel
  * @link https://dev.commercetools.com/http-api-projects-channels.html#channel
- * @method string getId()
  * @method Channel setId(string $id = null)
  * @method int getVersion()
  * @method Channel setVersion(int $version = null)

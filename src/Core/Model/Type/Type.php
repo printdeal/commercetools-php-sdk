@@ -14,7 +14,6 @@ use DateTime;
 /**
  * @package Commercetools\Core\Model\Type
  * @link https://dev.commercetools.com/http-api-projects-types.html#type
- * @method string getId()
  * @method Type setId(string $id = null)
  * @method int getVersion()
  * @method Type setVersion(int $version = null)

@@ -14,7 +14,6 @@ use DateTime;
 /**
  * @package Commercetools\Core\Model\Message
  * @link https://dev.commercetools.com/http-api-projects-messages.html#productslugchanged-message
- * @method string getId()
  * @method ProductSlugChangedMessage setId(string $id = null)
  * @method DateTimeDecorator getCreatedAt()
  * @method ProductSlugChangedMessage setCreatedAt(DateTime $createdAt = null)

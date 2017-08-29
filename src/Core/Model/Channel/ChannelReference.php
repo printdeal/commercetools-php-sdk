@@ -15,7 +15,6 @@ use Commercetools\Core\Model\Common\Reference;
  * @link https://dev.commercetools.com/http-api-projects-channels.html#channel
  * @method string getTypeId()
  * @method ChannelReference setTypeId(string $typeId = null)
- * @method string getId()
  * @method ChannelReference setId(string $id = null)
  * @method Channel getObj()
  * @method ChannelReference setObj(Channel $obj = null)

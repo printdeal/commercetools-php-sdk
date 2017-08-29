@@ -15,7 +15,6 @@ use Commercetools\Core\Model\Common\Reference;
  * @link https://dev.commercetools.com/http-api-projects-subscriptions.html#subscription
  * @method string getTypeId()
  * @method SubscriptionReference setTypeId(string $typeId = null)
- * @method string getId()
  * @method SubscriptionReference setId(string $id = null)
  * @method string getKey()
  * @method SubscriptionReference setKey(string $key = null)

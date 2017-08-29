@@ -13,7 +13,6 @@ use DateTime;
 /**
  * @package Commercetools\Core\Model\Message
  * @link https://dev.commercetools.com/http-api-projects-messages.html#reviewstatetransition-message
- * @method string getId()
  * @method ReviewStateTransitionMessage setId(string $id = null)
  * @method int getVersion()
  * @method ReviewStateTransitionMessage setVersion(int $version = null)

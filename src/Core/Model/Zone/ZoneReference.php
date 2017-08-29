@@ -14,7 +14,6 @@ use Commercetools\Core\Model\Common\Reference;
  * @link https://dev.commercetools.com/http-api-projects-zones.html#zone
  * @method string getTypeId()
  * @method ZoneReference setTypeId(string $typeId = null)
- * @method string getId()
  * @method ZoneReference setId(string $id = null)
  * @method Zone getObj()
  * @method ZoneReference setObj(Zone $obj = null)

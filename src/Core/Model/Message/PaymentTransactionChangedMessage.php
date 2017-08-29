@@ -12,7 +12,6 @@ use Commercetools\Core\Model\Common\Reference;
 /**
  * @package Commercetools\Core\Model\Message
  * @deprecated Use PaymentTransactionStateChangedMessage instead
- * @method string getId()
  * @method PaymentTransactionChangedMessage setId(string $id = null)
  * @method int getVersion()
  * @method PaymentTransactionChangedMessage setVersion(int $version = null)

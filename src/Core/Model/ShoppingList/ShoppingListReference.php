@@ -14,7 +14,6 @@ use Commercetools\Core\Model\Common\Reference;
  * @link https://dev.commercetools.com/http-api-projects-shopping-lists.html#shopping-list
  * @method string getTypeId()
  * @method ShoppingListReference setTypeId(string $typeId = null)
- * @method string getId()
  * @method ShoppingListReference setId(string $id = null)
  * @method ShoppingList getObj()
  * @method ShoppingListReference setObj(ShoppingList $obj = null)

@@ -12,7 +12,6 @@ use DateTime;
 /**
  * @package Commercetools\Core\Model\Message
  * @link https://dev.commercetools.com/http-api-projects-messages.html#reviewratingset-message
- * @method string getId()
  * @method ReviewRatingSetMessage setId(string $id = null)
  * @method int getVersion()
  * @method ReviewRatingSetMessage setVersion(int $version = null)

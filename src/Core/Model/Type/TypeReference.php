@@ -15,7 +15,6 @@ use Commercetools\Core\Model\Common\JsonObject;
  * @link https://dev.commercetools.com/http-api-projects-types.html#type
  * @method string getTypeId()
  * @method TypeReference setTypeId(string $typeId = null)
- * @method string getId()
  * @method TypeReference setId(string $id = null)
  * @method Type getObj()
  * @method TypeReference setObj(Type $obj = null)
