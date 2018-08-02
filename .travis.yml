@@ -38,7 +38,7 @@ before_script:
 script:
 - if [ $PHP == '7.1.18' ] && [ $GUZZLE == '6' ]; then ant phpcs-ci; fi
 - if [ $PHP == '5.6.37' ] || [ $PHP == 'hhvm' ] ; then vendor/bin/phpunit -c phpunit5.xml.dist --testsuite=unit; fi
-- if [ $GUZZLE == '6' ] && [ $PHP != '5.6.37' ] ; then vendor/bin/phpunit --testsuite=unit; fi
+- if [ $PHP != '5.6.37' ] ; then vendor/bin/phpunit --testsuite=unit; fi
 - if [ $PHP == '7.0.31' ] && [ $GUZZLE == '6' ] && [ $TRAVIS_PULL_REQUEST == 'false' ]; then vendor/bin/phpunit --testsuite=integration; fi
 - bin/ctp-tlscheck.php
 before_deploy:
