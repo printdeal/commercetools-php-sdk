@@ -17,7 +17,7 @@ matrix:
   - php: nightly
   include:
     - php: 5.6.37
-      env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest"
+      env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest" GUZZLE=5
 services:
 - redis-server
 cache:
