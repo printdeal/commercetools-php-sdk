@@ -15,6 +15,9 @@ matrix:
   allow_failures:
   - php: hhvm
   - php: nightly
+  include:
+    - php: 5.6.37
+      env: COMPOSER_FLAGS="--prefer-stable --prefer-lowest"
 services:
 - redis-server
 cache:
@@ -31,14 +34,12 @@ before_install:
 before_script:
 - composer config -g github-oauth.github.com $GITHUB_OAUTH_TOKEN
 - if [ $GUZZLE == '5' ] ; then ./set_guzzle5.sh; fi
-- if [ $GUZZLE == '5' ] ; then composer update -o --prefer-dist --prefer-lowest; fi
-- if [ $GUZZLE != '5' ] ; then composer install -o --prefer-dist; fi
+- composer update -o ${COMPOSER_FLAGS} --prefer-dist --no-interaction
 script:
 - if [ $PHP == '7.1.18' ] && [ $GUZZLE == '6' ]; then ant phpcs-ci; fi
 - if [ $GUZZLE == '5' ] || [ $PHP == '5.6.37' ] || [ $PHP == 'hhvm' ] ; then vendor/bin/phpunit -c phpunit5.xml.dist --testsuite=unit; fi
 - if [ $GUZZLE == '6' ] && [ $PHP != '5.6.37' ] ; then vendor/bin/phpunit --testsuite=unit; fi
 - if [ $PHP == '7.0.31' ] && [ $GUZZLE == '6' ] && [ $TRAVIS_PULL_REQUEST == 'false' ]; then vendor/bin/phpunit --testsuite=integration; fi
-- ant behat
 - bin/ctp-tlscheck.php
 before_deploy:
   - if [ $(phpenv version-name) = "7.1.18" ] ; then ant apigen; fi
@@ -49,14 +50,14 @@ deploy:
     on:
       branch: master
       condition: $GUZZLE = '6'
-      php: 7.1
+      php: 7.1.18
   - provider: script
     skip_cleanup: true
     script: ./push-docs-to-gh-pages.sh
     on:
       tags: true
       condition: $GUZZLE = '6'
-      php: 7.1
+      php: 7.1.18
 notifications:
   hipchat:
     rooms:
