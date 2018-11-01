@@ -29,7 +29,7 @@ use DateTime;
  * @method Cart setCreatedAt(DateTime $createdAt = null)
  * @method DateTimeDecorator getLastModifiedAt()
  * @method Cart setLastModifiedAt(DateTime $lastModifiedAt = null)
- * @method string getCustomerId()
+ * @method string|null getCustomerId()
  * @method Cart setCustomerId(string $customerId = null)
  * @method string getCustomerEmail()
  * @method Cart setCustomerEmail(string $customerEmail = null)
